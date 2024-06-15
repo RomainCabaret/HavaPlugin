@@ -1,0 +1,12 @@
+name: HavaPouce
+version: '1.0.0'
+main: pouce.HavaPouce
+api-version: '1.20'
+authors: [MrPouceBleu]
+commands:
+  gui:
+    description: Commande pour ouvrir une interface utilisateur
+    usage: /gui
+  guitem:
+    description: Commande pour crée un item d'interface
+    usage: /guitem

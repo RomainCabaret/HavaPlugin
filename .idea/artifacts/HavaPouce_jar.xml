@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="HavaPouce:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/HavaPouce_jar</output-path>
+    <root id="archive" name="HavaPouce.jar">
+      <element id="module-output" name="HavaPouce" />
+    </root>
+  </artifact>
+</component>
