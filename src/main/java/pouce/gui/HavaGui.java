@@ -27,9 +27,12 @@ import java.util.Map;
 
 import static pouce.HavaPouce.*;
 
-public class HavaGui implements Listener {
+public class HavaGui {
 
     private static Map<String, HavaGui> guiMap = new HashMap<>();
+    public static Map<String, HavaGui> GetGuiMap() {
+        return guiMap;
+    }
 
     private String guiName;
     private int guiSize;
@@ -47,6 +50,9 @@ public class HavaGui implements Listener {
 
     public String getGuiName() {
         return guiName;
+    }
+    public Inventory getGuiContent() {
+        return guiContent;
     }
 
 
@@ -146,68 +152,5 @@ public class HavaGui implements Listener {
 
     public static List<String> getAllGuiNames() {
         return new ArrayList<>(guiMap.keySet());
-    }
-
-    @EventHandler
-    public void onInventoryClose(InventoryCloseEvent event) {
-        Inventory closedInventory = event.getInventory();
-        Player player = (Player) event.getPlayer();
-        for (HavaGui gui : guiMap.values()) {
-            if (gui.guiContent.equals(closedInventory) && !player.hasMetadata("GuiProtect")) {
-                gui.saveToConfig();
-                break;
-            }
-        }
-    }
-
-    @EventHandler
-    public void onClick(InventoryClickEvent event) {
-        Player player = (Player) event.getWhoClicked();
-        ItemStack item = event.getCurrentItem();
-        if(item != null){
-            if (item.hasItemMeta()) {
-                ItemMeta meta = item.getItemMeta();
-                if (meta != null) {
-                    NamespacedKey key = new NamespacedKey(getPlugin(), "unique_id");
-                    String uniqueId = meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
-                    if (uniqueId != null) {
-                        // L'UUID a été récupéré avec succès
-
-                        if(isDebugMod()){
-                            sendHavaMessage(player, "Unique ID: " + uniqueId);
-                        }
-                        try {
-                            if(uniqueId.equals(HavaGuiItem.getItemByUniqueIdValue(uniqueId).getUniqueIdValue()) && player.hasMetadata("GuiProtect")){
-                                if(HavaGuiItem.getItemByUniqueIdValue(uniqueId).getGuiTarget() != null){
-                                    getGuiByName(HavaGuiItem.getItemByUniqueIdValue(uniqueId).getGuiTarget()).openReadonlyInventory(player);
-                                }
-                            }
-                        } catch (Exception e) {
-                            System.out.println("[HavaPouce] : Erreur a corriger plus tard : " + e.getMessage());
-                        }
-
-                    }
-                }
-            }
-            if(item.getType() == Material.RED_BED){
-                if(item.getItemMeta().getDisplayName().equalsIgnoreCase("§7 BED WARS")){
-                    Inventory inv = Bukkit.createInventory(null, 9, "combat");
-
-                    ItemStack woodSword = new ItemStack(Material.WOODEN_SWORD);
-                    ItemStack stoneSword = new ItemStack(Material.STONE_SWORD);
-                    ItemMeta woodMeta = woodSword.getItemMeta();
-                    woodMeta.addEnchant(Enchantment.DAMAGE_ALL, 250, true);
-                    ItemMeta stoneMeta = stoneSword.getItemMeta();
-                    woodSword.setItemMeta(woodMeta);
-                    stoneSword.setItemMeta(stoneMeta);
-
-                    inv.setItem(0, woodSword);
-                    inv.setItem(2, woodSword);
-                    player.openInventory(inv);
-
-
-                }
-            }
-        }
     }
 }

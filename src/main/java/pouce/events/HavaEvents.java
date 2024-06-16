@@ -28,101 +28,17 @@ import pouce.gui.HavaGuiItem;
 
 import java.util.UUID;
 
-import static pouce.HavaPouce.getPlugin;
-import static pouce.HavaPouce.sendHavaMessage;
+import static pouce.HavaPouce.*;
+import static pouce.gui.HavaGui.getGuiByName;
 
 public class HavaEvents implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
 
-        ItemStack item = new ItemStack(Material.COMPASS, 1);
-        ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.setDisplayName("§7 Menu Gui");
-        item.setItemMeta(itemMeta);
-
-//        ItemStack item2 = new ItemStack(Material.DIAMOND_SWORD);
-//        ItemMeta meta2 = item2.getItemMeta();
-//        meta2.setDisplayName("§7SWORD");
-//        NamespacedKey key = new NamespacedKey(getPlugin(), "unique_id");
-//        meta2.getPersistentDataContainer().set(key, PersistentDataType.STRING, "Menu PVP");
-//        item2.setItemMeta(meta2);
-
-
-
-//        player.getInventory().clear();
-        player.getInventory().setItem(0, item);
-//        player.getInventory().addItem(item2);
+// ---
 
     }
 
-    @EventHandler
-    public void onCompassInteract(PlayerInteractEvent event) {
-
-
-        Player player = event.getPlayer();
-        ItemStack item = event.getItem();
-        Action action = event.getAction();
-
-        if(item != null){
-            if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
-                if(item.getType() == Material.COMPASS) {
-                    if(item.getItemMeta().getDisplayName().equalsIgnoreCase("§7 Menu Gui")){
-                        Inventory inventory = Bukkit.createInventory(null, 54, "§6Menu de navigation");
-
-                        ItemStack item2 = new ItemStack(Material.RED_BED, 1);
-                        ItemMeta itemMeta2 = item2.getItemMeta();
-                        itemMeta2.setDisplayName("§7 BED WARS");
-                        item2.setItemMeta(itemMeta2);
-                        inventory.setItem(51, item2);
-
-
-//                        player.getInventory().addItem(item2);
-
-
-                        for(Player p : Bukkit.getOnlinePlayers()){
-                            ItemStack head = new ItemStack(Material.PLAYER_HEAD, 1);
-                            SkullMeta meta = (SkullMeta) head.getItemMeta();
-                            meta.setOwner(p.getName());
-                            meta.setDisplayName("§c" + p.getName());
-                            head.setItemMeta(meta);
-
-                            inventory.addItem(head);
-
-                        }
-                        player.openInventory(inventory);
-                        player.setMetadata("GuiProtect", new FixedMetadataValue(getPlugin(), "GuiProtect"));
-                    }
-                }
-            }
-        }
-    }
-//    @EventHandler
-//    public void onClick(InventoryClickEvent event) {
-//        Player player = (Player) event.getWhoClicked();
-//        ItemStack item = event.getCurrentItem();
-//        if(item != null){
-//            if(item.getType() == Material.RED_BED){
-//                if(item.getItemMeta().getDisplayName().equalsIgnoreCase("§7 BED WARS")){
-//                    Inventory inv = Bukkit.createInventory(null, 9, "combat");
-//
-//                    ItemStack woodSword = new ItemStack(Material.WOODEN_SWORD);
-//                    ItemStack stoneSword = new ItemStack(Material.STONE_SWORD);
-//                    ItemMeta woodMeta = woodSword.getItemMeta();
-//                    woodMeta.addEnchant(Enchantment.DAMAGE_ALL, 250, true);
-//                    ItemMeta stoneMeta = stoneSword.getItemMeta();
-//                    woodSword.setItemMeta(woodMeta);
-//                    stoneSword.setItemMeta(stoneMeta);
-//
-//                    inv.setItem(0, woodSword);
-//                    inv.setItem(2, woodSword);
-//                    player.openInventory(inv);
-//
-//
-//                }
-//            }
-//        }
-//    }
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player) {
@@ -166,44 +82,57 @@ public class HavaEvents implements Listener {
 
         }
     }
+
+//    INVENTORY
+
     @EventHandler
-    public void onClick(InventoryClickEvent event){
+    public void onClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
+        ItemStack item = event.getCurrentItem();
 
-        if(player.hasMetadata("GuiProtect")){
+        if (player.hasMetadata("GuiProtect")) {
             event.setCancelled(true);
-        }
+            if(item != null){
+                if (item.hasItemMeta()) {
+                    ItemMeta meta = item.getItemMeta();
+                    if (meta != null) {
+                        NamespacedKey key = new NamespacedKey(getPlugin(), "unique_id");
+                        String uniqueId = meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
+                        if (uniqueId != null) {
 
-
-    }
-    @EventHandler
-    public void onClose(InventoryCloseEvent event){
-        Player player = (Player) event.getPlayer();
-
-        if(player.hasMetadata("GuiProtect")){
-            player.removeMetadata("GuiProtect", getPlugin());
-        }
-    }
-
-
-    public void onPlayerInteract(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
-        ItemStack item = event.getItem();
-        if (item != null && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
-            if (item.hasItemMeta()) {
-                ItemMeta meta = item.getItemMeta();
-                if (meta != null && meta.hasDisplayName()) {
-                    String uniqueIdValue = meta.getDisplayName(); // Utiliser la valeur de l'affichage du nom comme identifiant unique
-                    HavaGuiItem guiItem = HavaGuiItem.getItemByUniqueIdValue(uniqueIdValue);
-                    if (guiItem != null) {
-                        HavaGui gui = HavaGui.getGuiByName(guiItem.getGuiTarget());
-                        if (gui != null) {
-                            gui.openInventory(player);
-                        } else {
-                            sendHavaMessage(player, "Le GUI cible n'existe pas.");
+                            sendHavaDev(player, "Unique ID: " + uniqueId);
+                            try {
+                                if(HavaGuiItem.getItemByUniqueIdValue(uniqueId) != null){
+                                    if(uniqueId.equals(HavaGuiItem.getItemByUniqueIdValue(uniqueId).getUniqueIdValue()) && player.hasMetadata("GuiProtect")){
+                                        if(HavaGuiItem.getItemByUniqueIdValue(uniqueId).getGuiTarget() != null){
+                                            getGuiByName(HavaGuiItem.getItemByUniqueIdValue(uniqueId).getGuiTarget()).openReadonlyInventory(player);
+                                        }
+                                    }
+                                }
+                            } catch (Exception e) {
+                                System.out.println("[HavaPouce] : Erreur a corriger plus tard : " + e.getMessage());
+                            }
                         }
                     }
                 }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onClose(InventoryCloseEvent event) {
+        Player player = (Player) event.getPlayer();
+        Inventory closedInventory = event.getInventory();
+
+
+        if (player.hasMetadata("GuiProtect")) {
+            player.removeMetadata("GuiProtect", getPlugin());
+        }
+
+        for (HavaGui gui : HavaGui.GetGuiMap().values()) {
+            if (gui.getGuiContent().equals(closedInventory) && !player.hasMetadata("GuiProtect")) {
+                gui.saveToConfig();
+                break;
             }
         }
     }

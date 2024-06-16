@@ -14,6 +14,14 @@ public final class HavaPouce extends JavaPlugin {
     private static HavaPouce instance;
     private static boolean debugMod = true;
 
+    public static HavaPouce getPlugin() {
+        return instance;
+    }
+
+    public static boolean isDebugMod(){ return debugMod; }
+    public static void changeDebugMod(){ debugMod = !debugMod; }
+
+
     @Override
     public void onEnable() {
         instance = this;
@@ -28,13 +36,12 @@ public final class HavaPouce extends JavaPlugin {
 
         getCommand("gui").setExecutor(command);
         getCommand("guitem").setExecutor(new HavaCommand());
-//        getCommand("getitem").setExecutor(new HavaCommand());
+        getCommand("havadev").setExecutor(new HavaCommand());
 
 
 
         //  --- EVENEMENTS ---
 
-        getServer().getPluginManager().registerEvents(new HavaGui(), this);
         getServer().getPluginManager().registerEvents(new HavaEvents(), this);
 
         //  --- TAB  ---
@@ -43,7 +50,6 @@ public final class HavaPouce extends JavaPlugin {
         getCommand("guitem").setTabCompleter(tab);
 
 
-        // Charger les GUIs et items depuis le fichier de configuration
         HavaGui.loadGuisFromConfig();
         HavaGuiItem.loadItemsFromConfig();
 
@@ -51,26 +57,22 @@ public final class HavaPouce extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Sauvegarder les GUIs et items avant de désactiver le plugin
         for (String gui : HavaGui.getAllGuiNames()) {
-              HavaGui.getGuiByName(gui).saveToConfig();
+            HavaGui.getGuiByName(gui).saveToConfig();
         }
     }
 
-    public static HavaPouce getPlugin() {
-        return instance;
+    public static void sendHavaMessage(Player player, String msg) {
+        player.sendMessage("(§f§lHava§3§lPouce§f) ➺ " + ChatColor.GRAY + msg);
     }
 
-    public static void sendHavaMessage(Player player, String msg){
-        player.sendMessage( "(§f§lHava§3§lPouce§f) ➺ " + ChatColor.GRAY + msg);
-    }
-    public static void sendHavaError(Player player, String msg){
-        player.sendMessage( "(§f§lHava§c§lError§f) ➺ " + ChatColor.RED + msg);
-    }
-    public static boolean isDebugMod(){
-        return debugMod;
+    public static void sendHavaError(Player player, String msg) {
+        player.sendMessage("(§f§lHava§c§lError§f) ➺ " + ChatColor.RED + msg);
     }
 
-
-
+    public static void sendHavaDev(Player player, String msg) {
+        if(isDebugMod()){
+            player.sendMessage("(§f§lHava§9§lDev§f) ➺ " + ChatColor.WHITE + msg);
+        }
+    }
 }

@@ -10,3 +10,7 @@ commands:
   guitem:
     description: Commande pour crée un item d'interface
     usage: /guitem
+  havadev:
+    description: Commande pour changer le mod de developpement
+    usage: /havadev
+

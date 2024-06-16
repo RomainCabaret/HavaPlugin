@@ -20,9 +20,11 @@ public class HavaTabCompleter implements TabCompleter {
         Set<String> validGuitemArgs = Set.of("get", "add", "edit", "del");
 
 
+        // ---------- GUI ----------
+
 
         // GUI <Action>
-        if(Objects.equals(command.getName().toLowerCase(), "gui") && args.length == 1) {
+        if (Objects.equals(command.getName().toLowerCase(), "gui") && args.length == 1) {
             for (String arg : validGuiArgs) {
                 if (arg.toLowerCase().startsWith(args[0].toLowerCase())) {
                     suggestions.add(arg);
@@ -40,8 +42,10 @@ public class HavaTabCompleter implements TabCompleter {
             }
         }
 
+        // ---------- GUITEM ----------
+
         // Guitem <Action>
-        else if(Objects.equals(command.getName().toLowerCase(), "guitem") && args.length == 1) {
+        else if (Objects.equals(command.getName().toLowerCase(), "guitem") && args.length == 1) {
             for (String arg : validGuitemArgs) {
                 if (arg.toLowerCase().startsWith(args[0].toLowerCase())) {
                     suggestions.add(arg);
@@ -52,21 +56,21 @@ public class HavaTabCompleter implements TabCompleter {
 
         // Guitem <Action> <item>
 
-        else if (Objects.equals(command.getName().toLowerCase(), "guitem") && Set.of("get", "edit", "del").contains(args[0].toLowerCase()) && args.length == 2 ){
-            for (String guitemName : HavaGuiItem.getAllGuitem()){
-                if(guitemName.toLowerCase().startsWith(args[1].toLowerCase())){
+        else if (Objects.equals(command.getName().toLowerCase(), "guitem") && Set.of("get", "edit", "del").contains(args[0].toLowerCase()) && args.length == 2) {
+            for (String guitemName : HavaGuiItem.getAllGuitem()) {
+                if (guitemName.toLowerCase().startsWith(args[1].toLowerCase())) {
                     suggestions.add(guitemName);
                 }
             }
         }
-        // Guitem add <ItemName> <TargetGui>
+        // Guitem <add/edit> <ItemName> <TargetGui>
 
-        else if (Objects.equals(command.getName().toLowerCase(), "guitem") && Objects.equals("add", args[0].toLowerCase()) && args.length == 3 ){
+        else if (Objects.equals(command.getName().toLowerCase(), "guitem") && Set.of("add", "edit").contains(args[0].toLowerCase()) && args.length == 3) {
             for (String guiName : HavaGui.getAllGuiNames()) {
-                    if (guiName.toLowerCase().startsWith(args[2].toLowerCase())) {
-                        suggestions.add(guiName);
-                    }
+                if (guiName.toLowerCase().startsWith(args[2].toLowerCase())) {
+                    suggestions.add(guiName);
                 }
+            }
         }
 
         return suggestions;

@@ -191,7 +191,7 @@ public class HavaCommand implements CommandExecutor {
                                             item.deleteToConfig();
                                             sendHavaMessage(player, "Item supprimé avec succès pour la valeur " + uniqueIdValue + ".");
                                         } else {
-                                            sendHavaError(player, "Aucun item trouvé avec la valeur " + uniqueIdValue +".");
+                                            sendHavaError(player, "Aucun item trouvé avec la valeur " + uniqueIdValue + ".");
                                         }
                                     } else {
                                         sendHavaMessage(player, "Utilisation : /guitem del <item>");
@@ -207,6 +207,20 @@ public class HavaCommand implements CommandExecutor {
                         return true;
                     }
                     break;
+                case "havadev":
+                    if (args.length == 0) {
+                        changeDebugMod();
+                        if (isDebugMod()) {
+                            sendHavaMessage(player, "Mode de developpement §2§lactivé");
+                        } else {
+                            sendHavaMessage(player, "Mode de developpement §c§ldésactivé");
+                        }
+                        return true;
+
+                    } else {
+                        sendHavaMessage(player, "Utilisation : /havedev");
+                        return true;
+                    }
                 default:
                     sendHavaMessage(player, "Commande inconnue.");
                     break;
