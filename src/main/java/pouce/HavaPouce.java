@@ -35,8 +35,12 @@ public final class HavaPouce extends JavaPlugin {
 
 
         getCommand("gui").setExecutor(command);
-        getCommand("guitem").setExecutor(new HavaCommand());
-        getCommand("havadev").setExecutor(new HavaCommand());
+        getCommand("guitem").setExecutor(command);
+        getCommand("havadev").setExecutor(command);
+        getCommand("nav").setExecutor(command);
+        getCommand("setnbt").setExecutor(command);
+        getCommand("clearnbt").setExecutor(command);
+
 
 
 

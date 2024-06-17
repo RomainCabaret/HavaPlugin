@@ -8,6 +8,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import pouce.HavaPouce;
 import pouce.gui.HavaGui;
 import pouce.gui.HavaGuiItem;
@@ -219,6 +221,82 @@ public class HavaCommand implements CommandExecutor {
 
                     } else {
                         sendHavaMessage(player, "Utilisation : /havedev");
+                        return true;
+                    }
+                case "setnbt": {
+                    if (args.length != 2) {
+                        sendHavaMessage(player, "Utilisation: /setntb <key> <value>");
+                        return true;
+                    }
+
+                    ItemStack item = player.getInventory().getItemInMainHand();
+                    if (item == null) {
+                        sendHavaMessage(player, "Vous devez tenir un objet dans votre main.");
+                        return true;
+                    }
+
+                    String key = args[0];
+                    String value = args[1];
+
+                    ItemMeta meta = item.getItemMeta();
+                    if (meta == null) {
+                        sendHavaError(player, "L'objet en main ne peut pas avoir de NBT.");
+                        return true;
+                    }
+
+                    NamespacedKey nbtKey = new NamespacedKey(getPlugin(), key);
+                    PersistentDataContainer container = meta.getPersistentDataContainer();
+                    container.set(nbtKey, PersistentDataType.STRING, value);
+                    item.setItemMeta(meta);
+
+                    sendHavaMessage(player, "NBT défini : " + key + " = " + value);
+                    return true;
+                }
+                case "nav":
+                    if(args.length == 0){
+
+                        ItemStack item = new ItemStack(Material.RECOVERY_COMPASS);
+                        ItemMeta meta = item.getItemMeta();
+                        meta.setDisplayName("§7NavMenu");
+                        NamespacedKey key = new NamespacedKey(getPlugin(), "unique_id");
+                        meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, "navGuiClick");
+                        item.setItemMeta(meta);
+
+                        player.getInventory().addItem(item);
+                        return true;
+                    } else{
+                        sendHavaMessage(player, "Utilisation : /nav");
+                        return true;
+                    }
+                case "clearnbt":
+                    if(args.length == 0){
+                        ItemStack item = player.getInventory().getItemInMainHand();
+                        if (item == null || !item.hasItemMeta()) {
+                            sendHavaMessage(player, "Vous devez tenir un objet valide dans votre main.");
+                            return true;
+                        }
+
+                        ItemMeta meta = item.getItemMeta();
+                        if (meta == null) {
+                            sendHavaMessage(player, "L'objet en main ne peut pas avoir de NBT.");
+                            return true;
+                        }
+
+                        PersistentDataContainer container = meta.getPersistentDataContainer();
+                        if (container.isEmpty()) {
+                            sendHavaMessage(player, "Aucun NBT trouvé sur l'objet.");
+                            return true;
+                        }
+
+                        for (NamespacedKey key : container.getKeys()) {
+                            container.remove(key);
+                        }
+
+                        item.setItemMeta(meta);
+                        sendHavaMessage(player,"Tous les NBT ont été supprimés de l'objet en main.");
+                        return true;
+                    } else{
+                        sendHavaMessage(player, "Utilisation : /clearnbt");
                         return true;
                     }
                 default:

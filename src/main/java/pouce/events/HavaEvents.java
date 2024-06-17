@@ -29,6 +29,7 @@ import pouce.gui.HavaGuiItem;
 import java.util.UUID;
 
 import static pouce.HavaPouce.*;
+import static pouce.commands.HavaInteract.onNavInteract;
 import static pouce.gui.HavaGui.getGuiByName;
 
 public class HavaEvents implements Listener {
@@ -96,6 +97,8 @@ public class HavaEvents implements Listener {
                 if (item.hasItemMeta()) {
                     ItemMeta meta = item.getItemMeta();
                     if (meta != null) {
+                        onNavInteract(player, item);
+
                         NamespacedKey key = new NamespacedKey(getPlugin(), "unique_id");
                         String uniqueId = meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
                         if (uniqueId != null) {
@@ -136,6 +139,36 @@ public class HavaEvents implements Listener {
             }
         }
     }
+
+    // INTERACT
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+
+
+        Player player = event.getPlayer();
+        ItemStack item = event.getItem();
+        Action action = event.getAction();
+
+        if(item != null){
+            if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
+                if(item.getType() == Material.RECOVERY_COMPASS) {
+                    if(item.getItemMeta().getDisplayName().equalsIgnoreCase("§7NavMenu")){
+                        HavaGui gui = HavaGui.getGuiByName("nav");
+                        if(gui != null){
+                            gui.openReadonlyInventory(player);
+                        } else{
+                            HavaPouce.sendHavaError(player, "Merci de crée un gui ayant pour nom nav");
+                        }
+
+                        player.setMetadata("GuiProtect", new FixedMetadataValue(getPlugin(), "GuiProtect"));
+                    }
+                }
+            }
+        }
+    }
+
+
 }
 
 
