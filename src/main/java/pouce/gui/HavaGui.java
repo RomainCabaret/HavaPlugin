@@ -44,7 +44,7 @@ public class HavaGui {
     public HavaGui(String name, int size) {
         this.guiName = name;
         this.guiSize = size;
-        this.guiContent = Bukkit.createInventory(null, size, name);
+        this.guiContent = Bukkit.createInventory(null, size, "");
         guiMap.put(name, this); // Ajouter cette instance à la map
     }
 
@@ -62,7 +62,7 @@ public class HavaGui {
 
     public void openReadonlyInventory(Player player) {
 
-        Inventory inv = Bukkit.createInventory(null, guiSize, guiName);
+        Inventory inv = Bukkit.createInventory(null, guiSize, "");
         inv.setContents(guiContent.getContents());
         player.openInventory(inv);
         player.setMetadata("GuiProtect", new FixedMetadataValue(getPlugin(), "GuiProtect"));
@@ -110,7 +110,7 @@ public class HavaGui {
                 String guiName = key;
                 int size = guiSection.getInt(guiName + ".size");
 
-                Inventory guiContent = Bukkit.createInventory(null, size, guiName);
+                Inventory guiContent = Bukkit.createInventory(null, size, "");
 
                 ConfigurationSection itemsSection = guiSection.getConfigurationSection(guiName + ".items");
                 if (itemsSection != null) {

@@ -18,6 +18,8 @@ public class HavaTabCompleter implements TabCompleter {
 
         Set<String> validGuiArgs = Set.of("open", "add", "edit", "del");
         Set<String> validGuitemArgs = Set.of("get", "add", "edit", "del");
+        Set<String> validNbtArgs = Set.of("get", "add", "del");
+
 
 
         // ---------- GUI ----------
@@ -71,6 +73,18 @@ public class HavaTabCompleter implements TabCompleter {
                     suggestions.add(guiName);
                 }
             }
+        }
+
+        // ---------- NBT ----------
+
+        // nbt <Action>
+        else if (Objects.equals(command.getName().toLowerCase(), "nbt") && args.length == 1) {
+            for (String arg : validNbtArgs) {
+                if (arg.toLowerCase().startsWith(args[0].toLowerCase())) {
+                    suggestions.add(arg);
+                }
+            }
+
         }
 
         return suggestions;

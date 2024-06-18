@@ -223,35 +223,6 @@ public class HavaCommand implements CommandExecutor {
                         sendHavaMessage(player, "Utilisation : /havedev");
                         return true;
                     }
-                case "setnbt": {
-                    if (args.length != 2) {
-                        sendHavaMessage(player, "Utilisation: /setntb <key> <value>");
-                        return true;
-                    }
-
-                    ItemStack item = player.getInventory().getItemInMainHand();
-                    if (item == null) {
-                        sendHavaMessage(player, "Vous devez tenir un objet dans votre main.");
-                        return true;
-                    }
-
-                    String key = args[0];
-                    String value = args[1];
-
-                    ItemMeta meta = item.getItemMeta();
-                    if (meta == null) {
-                        sendHavaError(player, "L'objet en main ne peut pas avoir de NBT.");
-                        return true;
-                    }
-
-                    NamespacedKey nbtKey = new NamespacedKey(getPlugin(), key);
-                    PersistentDataContainer container = meta.getPersistentDataContainer();
-                    container.set(nbtKey, PersistentDataType.STRING, value);
-                    item.setItemMeta(meta);
-
-                    sendHavaMessage(player, "NBT défini : " + key + " = " + value);
-                    return true;
-                }
                 case "nav":
                     if(args.length == 0){
 
@@ -268,37 +239,122 @@ public class HavaCommand implements CommandExecutor {
                         sendHavaMessage(player, "Utilisation : /nav");
                         return true;
                     }
-                case "clearnbt":
-                    if(args.length == 0){
-                        ItemStack item = player.getInventory().getItemInMainHand();
-                        if (item == null || !item.hasItemMeta()) {
-                            sendHavaMessage(player, "Vous devez tenir un objet valide dans votre main.");
+                case "nbt": {
+                    Set<String> validNbtArgs = Set.of("get", "add", "del");
+                    if (args.length != 0) {
+                        if (validNbtArgs.contains(args[0])) {
+                            switch (args[0]) {
+                                case "get": {
+                                    if(args.length == 1){
+                                        ItemStack item = player.getInventory().getItemInMainHand();
+
+
+                                        ItemMeta meta = item.getItemMeta();
+                                        if (meta == null) {
+                                            sendHavaMessage(player, "L'objet en main ne peut pas avoir de NBT.");
+                                            return true;
+                                        }
+
+                                        PersistentDataContainer container = meta.getPersistentDataContainer();
+                                        if (container.isEmpty()) {
+                                            sendHavaMessage(player, "Aucun NBT trouvé sur l'objet.");
+                                            return true;
+                                        }
+
+                                        StringBuilder nbtData = new StringBuilder("§8§l━━━━━━━━━━━━\n");
+
+                                        for (NamespacedKey key : container.getKeys()) {
+                                            String value = container.get(key, PersistentDataType.STRING);
+                                            nbtData.append("§f§l -  "  + key.getKey()).append(" ➤ §7").append(value).append("\n");
+                                        }
+                                        nbtData.append("§8§l━━━━━━━━━━━━");
+
+
+                                        player.sendMessage(nbtData.toString());
+                                        return true;
+
+                                    } else{
+                                        sendHavaMessage(player, "Utilisation: /nbt get");
+                                        return true;
+                                    }
+
+                                }
+                                case "add": {
+                                    if(args.length == 3){
+                                        ItemStack item = player.getInventory().getItemInMainHand();
+                                        if (item == null || !item.hasItemMeta()) {
+                                            sendHavaMessage(player, "Vous devez tenir un objet valide dans votre main.");
+                                            return true;
+                                        }
+
+
+                                        String key = args[1];
+                                        String value = args[2];
+
+                                        ItemMeta meta = item.getItemMeta();
+                                        if (meta == null) {
+                                            sendHavaError(player, "L'objet en main ne peut pas avoir de NBT.");
+                                            return true;
+                                        }
+                                        try {
+                                            NamespacedKey nbtKey = new NamespacedKey(getPlugin(), key);
+                                            PersistentDataContainer container = meta.getPersistentDataContainer();
+                                            container.set(nbtKey, PersistentDataType.STRING, value);
+                                            item.setItemMeta(meta);
+                                            sendHavaMessage(player, "NBT défini : " + key + " = " + value);
+                                        } catch (Exception e) {
+                                            sendHavaError(player, "Les caractères spéciaux ne sont pas accepté. " + e.getMessage());
+                                        }
+                                        return true;
+
+                                    } else {
+                                        sendHavaMessage(player, "Utilisation: /nbt add <key> <value>");
+                                        return true;
+                                    }
+                                }
+                                case "del": {
+                                    if(args.length == 1){
+                                        ItemStack item = player.getInventory().getItemInMainHand();
+                                        if (item == null || !item.hasItemMeta()) {
+                                            sendHavaMessage(player, "Vous devez tenir un objet valide dans votre main.");
+                                            return true;
+                                        }
+
+                                        ItemMeta meta = item.getItemMeta();
+                                        if (meta == null) {
+                                            sendHavaMessage(player, "L'objet en main ne peut pas avoir de NBT.");
+                                            return true;
+                                        }
+
+                                        PersistentDataContainer container = meta.getPersistentDataContainer();
+                                        if (container.isEmpty()) {
+                                            sendHavaMessage(player, "Aucun NBT trouvé sur l'objet.");
+                                            return true;
+                                        }
+
+                                        for (NamespacedKey key : container.getKeys()) {
+                                            container.remove(key);
+                                        }
+
+                                        item.setItemMeta(meta);
+                                        sendHavaMessage(player,"Tous les NBT ont été supprimés de l'objet en main.");
+                                        return true;
+                                    } else{
+                                        sendHavaMessage(player, "Utilisation : /nbt del");
+                                        return true;
+                                    }
+                                }
+                            }
+                        } else {
+                            sendHavaMessage(player, "Utilisation: /nbt del");
+                                return true;
+                        }
+                    } else {
+                        sendHavaMessage(player, "Utilisation: /nbt <action>");
                             return true;
                         }
-
-                        ItemMeta meta = item.getItemMeta();
-                        if (meta == null) {
-                            sendHavaMessage(player, "L'objet en main ne peut pas avoir de NBT.");
-                            return true;
-                        }
-
-                        PersistentDataContainer container = meta.getPersistentDataContainer();
-                        if (container.isEmpty()) {
-                            sendHavaMessage(player, "Aucun NBT trouvé sur l'objet.");
-                            return true;
-                        }
-
-                        for (NamespacedKey key : container.getKeys()) {
-                            container.remove(key);
-                        }
-
-                        item.setItemMeta(meta);
-                        sendHavaMessage(player,"Tous les NBT ont été supprimés de l'objet en main.");
-                        return true;
-                    } else{
-                        sendHavaMessage(player, "Utilisation : /clearnbt");
-                        return true;
-                    }
+                        break;
+                }
                 default:
                     sendHavaMessage(player, "Commande inconnue.");
                     break;

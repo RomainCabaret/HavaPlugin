@@ -16,10 +16,7 @@ commands:
   nav:
     description: Affiche le menu de navigation
     usage: /nav
-  setnbt:
-    description: Permet d'ajouter des NTB a un item
-    usage: /setntb <key> <value>
-  clearnbt:
-    description: Supprime tous les NBT de l'item en main.
-    usage: /clearntb
+  nbt:
+    description: Permet de manipuler les nbt
+    usage: /ntb
 

@@ -36,10 +36,11 @@ public final class HavaPouce extends JavaPlugin {
 
         getCommand("gui").setExecutor(command);
         getCommand("guitem").setExecutor(command);
+
         getCommand("havadev").setExecutor(command);
         getCommand("nav").setExecutor(command);
-        getCommand("setnbt").setExecutor(command);
-        getCommand("clearnbt").setExecutor(command);
+
+        getCommand("nbt").setExecutor(command);
 
 
 
@@ -52,6 +53,8 @@ public final class HavaPouce extends JavaPlugin {
 
         getCommand("gui").setTabCompleter(tab);
         getCommand("guitem").setTabCompleter(tab);
+        getCommand("nbt").setTabCompleter(tab);
+
 
 
         HavaGui.loadGuisFromConfig();
