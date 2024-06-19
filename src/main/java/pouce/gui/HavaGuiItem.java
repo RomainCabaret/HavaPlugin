@@ -55,10 +55,10 @@ public class HavaGuiItem {
     }
 
     public void saveToConfig() {
-        File file = new File(HavaPouce.getPlugin().getDataFolder(), "items.yml");
+        File file = new File(HavaPouce.getPlugin().getDataFolder(), "guitems.yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 
-        String path = "items." + uniqueIdValue + ".";
+        String path = "guitems." + uniqueIdValue + ".";
         config.set(path + "itemStack", itemStack);
         config.set(path + "guiTarget", guiTarget);
 
@@ -72,7 +72,7 @@ public class HavaGuiItem {
     public void deleteToConfig() {
         itemMap.remove(uniqueIdValue);
 
-        File file = new File(HavaPouce.getPlugin().getDataFolder(), "items.yml");
+        File file = new File(HavaPouce.getPlugin().getDataFolder(), "guitems.yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 
         String path = "items." + uniqueIdValue;
@@ -93,7 +93,7 @@ public class HavaGuiItem {
     }
 
     public static void loadItemsFromConfig() {
-        File file = new File(HavaPouce.getPlugin().getDataFolder(), "items.yml");
+        File file = new File(HavaPouce.getPlugin().getDataFolder(), "guitems.yml");
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -104,8 +104,8 @@ public class HavaGuiItem {
 
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 
-        if (config.contains("items")) {
-            ConfigurationSection itemSection = config.getConfigurationSection("items");
+        if (config.contains("guitems")) {
+            ConfigurationSection itemSection = config.getConfigurationSection("guitems");
             for (String key : itemSection.getKeys(false)) {
                 ItemStack itemStack = itemSection.getItemStack(key + ".itemStack");
                 String guiTarget = itemSection.getString(key + ".guiTarget");
