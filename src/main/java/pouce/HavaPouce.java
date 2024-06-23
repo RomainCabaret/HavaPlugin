@@ -1,12 +1,21 @@
 package pouce;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import pouce.commands.HavaCommand;
 import pouce.events.HavaEvents;
 import pouce.gui.HavaGui;
 import pouce.gui.HavaGuiItem;
+import pouce.items.HavaDistanceItems;
+import pouce.items.HavaItems;
+import pouce.items.HavaMeleeItems;
+import pouce.items.HavaUtilitaireItems;
+import pouce.items.rarity.HavaRarity;
+import pouce.items.utils.HavaItemsUtils;
 import pouce.tabs.HavaTabCompleter;
 
 public final class HavaPouce extends JavaPlugin {
@@ -26,6 +35,11 @@ public final class HavaPouce extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
+        saveDefaultConfig();
+
+        ConfigurationSerialization.registerClass(ItemStack.class);
+
+
         getLogger().info("HavaPouce has been enabled!");
 
         //  --- COMMANDE ---
@@ -42,7 +56,7 @@ public final class HavaPouce extends JavaPlugin {
 
         getCommand("nbt").setExecutor(command);
 
-
+        getCommand("donjonitems").setExecutor(command);
 
 
         //  --- EVENEMENTS ---
@@ -54,11 +68,13 @@ public final class HavaPouce extends JavaPlugin {
         getCommand("gui").setTabCompleter(tab);
         getCommand("guitem").setTabCompleter(tab);
         getCommand("nbt").setTabCompleter(tab);
+        getCommand("donjonitems").setTabCompleter(tab);
 
-
+        //   --- CONFIG  ---
 
         HavaGui.loadGuisFromConfig();
         HavaGuiItem.loadItemsFromConfig();
+        HavaItemsUtils.loadItemsConfig();
 
     }
 

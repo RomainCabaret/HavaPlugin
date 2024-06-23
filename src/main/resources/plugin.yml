@@ -19,4 +19,8 @@ commands:
   nbt:
     description: Permet de manipuler les nbt
     usage: /ntb
+  donjonitems:
+    description: permet de manipuler les items donjon
+    usage: /donjonitems
+
 

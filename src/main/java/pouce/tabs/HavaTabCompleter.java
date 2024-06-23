@@ -20,6 +20,11 @@ public class HavaTabCompleter implements TabCompleter {
         Set<String> validGuitemArgs = Set.of("get", "add", "edit", "del");
         Set<String> validNbtArgs = Set.of("get", "add", "del");
 
+        Set<String> validItemDonjonArgs = Set.of("add");
+        Set<String> validTypeItemDonjonArgs = Set.of("melee", "distance", "utilitaire");
+
+
+
 
 
         // ---------- GUI ----------
@@ -86,6 +91,30 @@ public class HavaTabCompleter implements TabCompleter {
             }
 
         }
+
+        // ---------- donjonitems ----------
+
+
+        // donjonitems <Action>
+        else if (Objects.equals(command.getName().toLowerCase(), "donjonitems") && args.length == 1) {
+            for (String arg : validItemDonjonArgs) {
+                if (arg.toLowerCase().startsWith(args[0].toLowerCase())) {
+                    suggestions.add(arg);
+                }
+            }
+        }
+
+        // donjonitems add <Type>
+        else if (Objects.equals(command.getName().toLowerCase(), "donjonitems") && args.length == 2) {
+            for (String arg : validTypeItemDonjonArgs) {
+                if (arg.toLowerCase().startsWith(args[1].toLowerCase())) {
+                    suggestions.add(arg);
+                }
+            }
+        }
+
+
+
 
         return suggestions;
     }
