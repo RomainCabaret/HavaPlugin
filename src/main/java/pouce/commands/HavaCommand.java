@@ -17,6 +17,7 @@ import org.bukkit.persistence.PersistentDataType;
 import pouce.HavaPouce;
 import pouce.gui.HavaGui;
 import pouce.gui.HavaGuiItem;
+import pouce.gui.fixedgui.HavaFixedGui;
 import pouce.items.HavaDistanceItems;
 import pouce.items.HavaItems;
 import pouce.items.HavaMeleeItems;
@@ -369,52 +370,20 @@ public class HavaCommand implements CommandExecutor {
                 }
                 case "donjonitems": {
                     if (args.length == 0) {
-                        Inventory gui = Bukkit.createInventory(null, 54, "§7Melee Items");
+//                        Inventory gui = HavaFixedGui.GetMeleeItemFixedGui();
+//
+//                        player.setMetadata("GuiProtect", new FixedMetadataValue(getPlugin(), "GuiProtect"));
+//                        player.openInventory(gui);
 
-                        gui.setItem(0, createItem(Material.GRAY_STAINED_GLASS_PANE, ""));
-                        gui.setItem(1, createItem(Material.GRAY_STAINED_GLASS_PANE, ""));
-                        gui.setItem(2, createItem(Material.GRAY_STAINED_GLASS_PANE, ""));
-                        gui.setItem(3, createItem(Material.GRAY_STAINED_GLASS_PANE, ""));
-                        gui.setItem(4, createItem(Material.DIAMOND_SWORD, "§7Melee"));
-                        gui.setItem(5, createItem(Material.GRAY_STAINED_GLASS_PANE, ""));
-                        gui.setItem(6, createItem(Material.GRAY_STAINED_GLASS_PANE, ""));
-                        gui.setItem(7, createItem(Material.GRAY_STAINED_GLASS_PANE, ""));
-                        gui.setItem(8, createItem(Material.GRAY_STAINED_GLASS_PANE, ""));
-                        gui.setItem(9, createItem(Material.GRAY_STAINED_GLASS_PANE, ""));
-                        gui.setItem(17, createItem(Material.GRAY_STAINED_GLASS_PANE, ""));
-                        gui.setItem(18, createItem(Material.GRAY_STAINED_GLASS_PANE, ""));
-                        gui.setItem(26, createItem(Material.GRAY_STAINED_GLASS_PANE, ""));
-                        gui.setItem(27, createItem(Material.GRAY_STAINED_GLASS_PANE, ""));
-                        gui.setItem(35, createItem(Material.GRAY_STAINED_GLASS_PANE, ""));
-                        gui.setItem(36, createItem(Material.GRAY_STAINED_GLASS_PANE, ""));
-                        gui.setItem(44, createItem(Material.GRAY_STAINED_GLASS_PANE, ""));
-                        gui.setItem(45, createItem(Material.ARROW, ""));
-                        gui.setItem(46, createItem(Material.GRAY_STAINED_GLASS_PANE, ""));
-                        gui.setItem(47, createItem(Material.GRAY_STAINED_GLASS_PANE, ""));
-                        gui.setItem(48, createItem(Material.GRAY_STAINED_GLASS_PANE, ""));
-                        gui.setItem(49, createItem(Material.GRAY_STAINED_GLASS_PANE, ""));
-                        gui.setItem(50, createItem(Material.GRAY_STAINED_GLASS_PANE, ""));
-                        gui.setItem(51, createItem(Material.GRAY_STAINED_GLASS_PANE, ""));
-                        gui.setItem(52, createItem(Material.GRAY_STAINED_GLASS_PANE, ""));
-                        gui.setItem(53, createItem(Material.REPEATER, ""));
-                        List<ItemStack> itemsList = HavaItemsUtils.GetMeleeItems();
-
-                        Set<Integer> allowedSlots = Set.of(10, 11, 12, 13, 14, 15, 16, 18, 19, 20, 21, 22, 23, 24, 25, 27, 28, 29, 30, 31, 32, 33, 34, 36, 37, 38, 39, 40, 41, 42, 43);
-
-                        int currentIndexItem = 0;
-                        sendHavaDev(player, itemsList.size() + "");
-
-                        for (int i = 0; i < 54; i++) {
-                            if (allowedSlots.contains(i) && currentIndexItem < itemsList.size()) {
-                                gui.setItem(i, itemsList.get(currentIndexItem));
-                                currentIndexItem++;
-                            }
+                        HavaGui gui = HavaGui.getGuiByName("DonjonItems");
+                        if (gui != null) {
+                            gui.openReadonlyInventory(player);
+                            return true;
+                        } else {
+                            sendHavaError(player, "Merci de definir le gui DonjonItems");
+                            return true;
                         }
-                        player.setMetadata("GuiProtect", new FixedMetadataValue(getPlugin(), "GuiProtect"));
-                        player.openInventory(gui);
-                        return true;
-                    }
-                    else if (args.length == 2) {
+                    } else if (args.length == 2) {
 
                         switch (args[0]) {
                             case "add": {
@@ -426,7 +395,7 @@ public class HavaCommand implements CommandExecutor {
                                     return true;
                                 }
 
-                                if(!itemStack.hasItemMeta()){
+                                if (!itemStack.hasItemMeta()) {
                                     sendHavaError(player, "Vous devez donner un nom à l'item dans votre main.");
                                     return true;
                                 }
@@ -438,7 +407,7 @@ public class HavaCommand implements CommandExecutor {
                                     sendHavaError(player, "Un item avec ce nom existe déjà. Veuillez choisir un autre nom.");
                                     return true;
                                 }
-                                switch (itemType){
+                                switch (itemType) {
                                     case "melee": {
                                         HavaMeleeItems item = new HavaMeleeItems(itemStack);
                                         HavaItemsUtils.saveItem(item);
@@ -478,15 +447,5 @@ public class HavaCommand implements CommandExecutor {
             return true;
         }
         return false;
-    }
-
-    private ItemStack createItem(Material material, String name) {
-        ItemStack item = new ItemStack(material);
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null && !name.isEmpty()) {
-            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
-            item.setItemMeta(meta);
-        }
-        return item;
     }
 }

@@ -29,6 +29,7 @@ import pouce.gui.HavaGuiItem;
 import java.util.UUID;
 
 import static pouce.HavaPouce.*;
+import static pouce.commands.HavaInteract.onDonjonNavInteract;
 import static pouce.commands.HavaInteract.onNavInteract;
 import static pouce.gui.HavaGui.getGuiByName;
 
@@ -98,6 +99,7 @@ public class HavaEvents implements Listener {
                     ItemMeta meta = item.getItemMeta();
                     if (meta != null) {
                         onNavInteract(player, item);
+                        onDonjonNavInteract(player, item);
 
                         NamespacedKey key = new NamespacedKey(getPlugin(), "unique_id");
                         String uniqueId = meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);

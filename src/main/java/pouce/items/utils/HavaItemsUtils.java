@@ -106,4 +106,34 @@ public class HavaItemsUtils {
         }
         return meleeItems;
     }
+    public static List<ItemStack> GetDistanceItems() {
+        List<ItemStack> distanceItems = new ArrayList<>();
+        if (customConfig.contains("items")) {
+            Set<String> keys = customConfig.getConfigurationSection("items").getKeys(false);
+            for (String key : keys) {
+                String path = "items." + key;
+                String donjonType = customConfig.getString(path + ".donjonType");
+                if ("distance".equalsIgnoreCase(donjonType)) {
+                    ItemStack item = customConfig.getItemStack(path + ".item");
+                    distanceItems.add(item);
+                }
+            }
+        }
+        return distanceItems;
+    }
+    public static List<ItemStack> GetUtilitaireItems() {
+        List<ItemStack> utilitaireItems = new ArrayList<>();
+        if (customConfig.contains("items")) {
+            Set<String> keys = customConfig.getConfigurationSection("items").getKeys(false);
+            for (String key : keys) {
+                String path = "items." + key;
+                String donjonType = customConfig.getString(path + ".donjonType");
+                if ("utilitaire".equalsIgnoreCase(donjonType)) {
+                    ItemStack item = customConfig.getItemStack(path + ".item");
+                    utilitaireItems.add(item);
+                }
+            }
+        }
+        return utilitaireItems;
+    }
 }
