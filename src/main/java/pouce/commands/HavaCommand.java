@@ -1,32 +1,23 @@
 package pouce.commands;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import pouce.HavaPouce;
 import pouce.gui.HavaGui;
 import pouce.gui.HavaGuiItem;
-import pouce.gui.fixedgui.HavaFixedGui;
 import pouce.items.HavaDistanceItems;
-import pouce.items.HavaItems;
 import pouce.items.HavaMeleeItems;
 import pouce.items.HavaUtilitaireItems;
-import pouce.items.rarity.HavaRarity;
 import pouce.items.utils.HavaItemsUtils;
+import pouce.nbt.HavaNBT;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import static pouce.HavaPouce.*;
@@ -166,7 +157,7 @@ public class HavaCommand implements CommandExecutor {
                                             sendHavaError(player, "GUI " + guiTarget + " n'existe pas.");
                                             return true;
                                         }
-                                        NamespacedKey namespacedKey = new NamespacedKey(getPlugin(), "unique_id");
+                                        NamespacedKey namespacedKey = new NamespacedKey(getPlugin(), HavaNBT.GetNBTUniqueId());
                                         HavaGuiItem item = new HavaGuiItem(itemStack, namespacedKey, uniqueIdValue, guiTarget);
                                         sendHavaMessage(player, "Item enregistré avec la valeur " + uniqueIdValue + " pour ouvrir le GUI " + guiTarget + ".");
                                         return true;
@@ -242,12 +233,11 @@ public class HavaCommand implements CommandExecutor {
                         ItemStack item = new ItemStack(Material.RECOVERY_COMPASS);
                         ItemMeta meta = item.getItemMeta();
                         meta.setDisplayName("§7NavMenu");
-                        NamespacedKey key = new NamespacedKey(getPlugin(), "unique_id");
+                        NamespacedKey key = new NamespacedKey(getPlugin(), HavaNBT.GetNBTUniqueId());
                         meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, "navGuiClick");
                         item.setItemMeta(meta);
 
                         player.getInventory().addItem(item);
-                        player.getInventory().addItem(HavaItemsUtils.loadItem("§7NavMenu").getItem());
                         return true;
                     } else {
                         sendHavaMessage(player, "Utilisation : /nav");

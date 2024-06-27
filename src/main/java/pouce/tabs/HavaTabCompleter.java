@@ -24,9 +24,6 @@ public class HavaTabCompleter implements TabCompleter {
         Set<String> validTypeItemDonjonArgs = Set.of("melee", "distance", "utilitaire");
 
 
-
-
-
         // ---------- GUI ----------
 
 

@@ -43,10 +43,14 @@ public class HavaItemsUtils {
             HavaMeleeItems meleeItem = (HavaMeleeItems) item;
             customConfig.set(path + ".donjonType", "melee");
             customConfig.set(path + ".damage", meleeItem.getDamage());
+            customConfig.set(path + ".strength", meleeItem.getStrength());
             save();
             return true;
         } else if (item instanceof HavaDistanceItems){
+            HavaDistanceItems distanceItem = (HavaDistanceItems) item;
             customConfig.set(path + ".donjonType", "distance");
+            customConfig.set(path + ".damage",  distanceItem.getDamage());
+            customConfig.set(path + ".strength", distanceItem.getStrength());
             save();
             return true;
         }
@@ -70,9 +74,12 @@ public class HavaItemsUtils {
 
         if ("melee".equalsIgnoreCase(donjonType)) {
             int damage = customConfig.getInt(path + ".damage");
-            return new HavaMeleeItems(uniqueName, rarity, itemStack, damage);
+            int strength = customConfig.getInt(path + ".strength");
+            return new HavaMeleeItems(uniqueName, rarity, itemStack, damage, strength);
         } else if ("distance".equalsIgnoreCase(donjonType)) {
-            return new HavaDistanceItems(uniqueName, rarity, itemStack);
+            int damage = customConfig.getInt(path + ".damage");
+            int strength = customConfig.getInt(path + ".strength");
+            return new HavaDistanceItems(uniqueName, rarity, itemStack, damage, strength);
         } else if ("utilitaire".equalsIgnoreCase(donjonType)) {
             return new HavaUtilitaireItems(uniqueName, rarity, itemStack);
         }

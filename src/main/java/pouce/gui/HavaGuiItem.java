@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import pouce.HavaPouce;
+import pouce.nbt.HavaNBT;
 
 import java.io.File;
 import java.io.IOException;
@@ -109,7 +110,7 @@ public class HavaGuiItem {
             for (String key : itemSection.getKeys(false)) {
                 ItemStack itemStack = itemSection.getItemStack(key + ".itemStack");
                 String guiTarget = itemSection.getString(key + ".guiTarget");
-                new HavaGuiItem(itemStack, new NamespacedKey(HavaPouce.getPlugin(), "unique_id"), key, guiTarget);
+                new HavaGuiItem(itemStack, new NamespacedKey(HavaPouce.getPlugin(), HavaNBT.GetNBTUniqueId()), key, guiTarget);
             }
         }
     }
@@ -123,7 +124,7 @@ public class HavaGuiItem {
         ItemStack item = itemGui.getItemStack();
         ItemMeta itemMeta = item.getItemMeta();
         itemMeta.setDisplayName(itemGui.getUniqueIdValue());
-        NamespacedKey key = new NamespacedKey(getPlugin(), "unique_id");
+        NamespacedKey key = new NamespacedKey(getPlugin(), HavaNBT.GetNBTUniqueId());
         itemMeta.getPersistentDataContainer().set(key, PersistentDataType.STRING, itemGui.getUniqueIdValue());
         item.setItemMeta(itemMeta);
         return item;

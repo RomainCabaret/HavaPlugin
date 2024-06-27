@@ -1,10 +1,8 @@
 package pouce.events;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,7 +15,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
@@ -25,12 +22,10 @@ import org.bukkit.potion.PotionEffectType;
 import pouce.HavaPouce;
 import pouce.gui.HavaGui;
 import pouce.gui.HavaGuiItem;
-
-import java.util.UUID;
+import pouce.nbt.HavaNBT;
 
 import static pouce.HavaPouce.*;
-import static pouce.commands.HavaInteract.onDonjonNavInteract;
-import static pouce.commands.HavaInteract.onNavInteract;
+import static pouce.commands.HavaInteract.*;
 import static pouce.gui.HavaGui.getGuiByName;
 
 public class HavaEvents implements Listener {
@@ -92,7 +87,7 @@ public class HavaEvents implements Listener {
         Player player = (Player) event.getWhoClicked();
         ItemStack item = event.getCurrentItem();
 
-        if (player.hasMetadata("GuiProtect")) {
+        if (player.hasMetadata(HavaNBT.GetNBTGuiProtect())) {
             event.setCancelled(true);
             if(item != null){
                 if (item.hasItemMeta()) {
@@ -100,15 +95,16 @@ public class HavaEvents implements Listener {
                     if (meta != null) {
                         onNavInteract(player, item);
                         onDonjonNavInteract(player, item);
+                        onDonjonItemInteract(player, item, event);
 
-                        NamespacedKey key = new NamespacedKey(getPlugin(), "unique_id");
+                        NamespacedKey key = new NamespacedKey(getPlugin(), HavaNBT.GetNBTUniqueId());
                         String uniqueId = meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
                         if (uniqueId != null) {
 
                             sendHavaDev(player, "Unique ID: " + uniqueId);
                             try {
                                 if(HavaGuiItem.getItemByUniqueIdValue(uniqueId) != null){
-                                    if(uniqueId.equals(HavaGuiItem.getItemByUniqueIdValue(uniqueId).getUniqueIdValue()) && player.hasMetadata("GuiProtect")){
+                                    if(uniqueId.equals(HavaGuiItem.getItemByUniqueIdValue(uniqueId).getUniqueIdValue()) && player.hasMetadata(HavaNBT.GetNBTGuiProtect())){
                                         if(HavaGuiItem.getItemByUniqueIdValue(uniqueId).getGuiTarget() != null){
                                             getGuiByName(HavaGuiItem.getItemByUniqueIdValue(uniqueId).getGuiTarget()).openReadonlyInventory(player);
                                         }
@@ -130,12 +126,12 @@ public class HavaEvents implements Listener {
         Inventory closedInventory = event.getInventory();
 
 
-        if (player.hasMetadata("GuiProtect")) {
-            player.removeMetadata("GuiProtect", getPlugin());
+        if (player.hasMetadata(HavaNBT.GetNBTGuiProtect())) {
+            player.removeMetadata(HavaNBT.GetNBTGuiProtect(), getPlugin());
         }
 
         for (HavaGui gui : HavaGui.GetGuiMap().values()) {
-            if (gui.getGuiContent().equals(closedInventory) && !player.hasMetadata("GuiProtect")) {
+            if (gui.getGuiContent().equals(closedInventory) && !player.hasMetadata(HavaNBT.GetNBTGuiProtect())) {
                 gui.saveToConfig();
                 break;
             }
@@ -163,7 +159,7 @@ public class HavaEvents implements Listener {
                             HavaPouce.sendHavaError(player, "Merci de crée un gui ayant pour nom nav");
                         }
 
-                        player.setMetadata("GuiProtect", new FixedMetadataValue(getPlugin(), "GuiProtect"));
+                        player.setMetadata(HavaNBT.GetNBTGuiProtect(), new FixedMetadataValue(getPlugin(), HavaNBT.GetNBTGuiProtect()));
                     }
                 }
             }

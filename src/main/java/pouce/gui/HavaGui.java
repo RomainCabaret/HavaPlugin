@@ -2,21 +2,15 @@ package pouce.gui;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.persistence.PersistentDataType;
 import pouce.HavaPouce;
+import pouce.nbt.HavaNBT;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,7 +59,7 @@ public class HavaGui {
         Inventory inv = Bukkit.createInventory(null, guiSize, "");
         inv.setContents(guiContent.getContents());
         player.openInventory(inv);
-        player.setMetadata("GuiProtect", new FixedMetadataValue(getPlugin(), "GuiProtect"));
+        player.setMetadata(HavaNBT.GetNBTGuiProtect(), new FixedMetadataValue(getPlugin(), HavaNBT.GetNBTGuiProtect()));
     }
 
     public void saveToConfig() {
