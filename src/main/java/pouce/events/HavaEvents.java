@@ -1,5 +1,6 @@
 package pouce.events;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -10,30 +11,56 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 import pouce.HavaPouce;
 import pouce.gui.HavaGui;
 import pouce.gui.HavaGuiItem;
+import pouce.gui.fixedgui.HavaFixedGui;
+import pouce.items.HavaDistanceItems;
+import pouce.items.HavaItems;
+import pouce.items.HavaMeleeItems;
+import pouce.items.utils.HavaItemsUtils;
 import pouce.nbt.HavaNBT;
+
+import java.util.List;
+import java.util.UUID;
 
 import static pouce.HavaPouce.*;
 import static pouce.commands.HavaInteract.*;
 import static pouce.gui.HavaGui.getGuiByName;
+import static pouce.items.utils.HavaItemsUtils.UpdatePlayerInventoryItems;
 
 public class HavaEvents implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
 
-// ---
+        UpdatePlayerInventoryItems(player);
+    }
 
+    @EventHandler
+    public void OnPlayerQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+
+        if (player.hasMetadata(HavaNBT.GetRenameItem())) {
+            player.removeMetadata(HavaNBT.GetRenameItem(), getPlugin());
+        }
+
+        if (player.hasMetadata(HavaNBT.GetNBTGuiProtect())) {
+            player.removeMetadata(HavaNBT.GetNBTGuiProtect(), getPlugin());
+        }
     }
 
     @EventHandler
@@ -41,39 +68,50 @@ public class HavaEvents implements Listener {
         if (event.getDamager() instanceof Player) {
             Player player = (Player) event.getDamager();
             ItemStack itemInHand = player.getInventory().getItemInMainHand();
+            ItemMeta itemMeta = itemInHand.getItemMeta();
 
-            if (itemInHand != null && itemInHand.getType() == Material.DIAMOND_SWORD) {
-                // Annuler les dégâts de base de l'épée
-                event.setDamage(0);
+            NamespacedKey keyDonjonType = new NamespacedKey(getPlugin(), HavaNBT.GetItemDonjonType());
 
-                // Définir les dégâts de base
-                double baseDamage = 5.0;
-                double strengthDamage = 0.0;
-                double strengthMultiplier = 1.0;
+            if (itemInHand != null && itemMeta.getPersistentDataContainer().has(keyDonjonType)) {
 
-                // Vérifiez si le joueur a un effet de potion de force
-                if (player.hasPotionEffect(PotionEffectType.INCREASE_DAMAGE)) {
-                    PotionEffect effect = player.getPotionEffect(PotionEffectType.INCREASE_DAMAGE);
-                    if (effect != null) {
-                        strengthMultiplier += 0.3 * (effect.getAmplifier() + 1); // Chaque niveau de force augmente les dégâts de 30%
-                        strengthDamage = baseDamage * (strengthMultiplier - 1); // Dégâts supplémentaires dus à l'effet de force
+                try{
+
+                    NamespacedKey keyID = new NamespacedKey(getPlugin(), HavaNBT.GetItemDonjonID());
+                    String uniqueName = itemMeta.getPersistentDataContainer().get(keyID, PersistentDataType.STRING);
+
+                    HavaItems item = HavaItemsUtils.loadItem(uniqueName);
+
+                    double baseDamage = 0;
+                    int strength = 0;
+
+                    if (item instanceof HavaMeleeItems) {
+                        HavaMeleeItems meleeItems = (HavaMeleeItems) item;
+                        baseDamage = meleeItems.getDamage();
+                        strength = meleeItems.getStrength();
+                    } else if (item instanceof HavaDistanceItems) {
+                        HavaDistanceItems distanceItems = (HavaDistanceItems) item;
+                        baseDamage = distanceItems.getDamage();
+                        strength = distanceItems.getStrength();
                     }
+
+                    double strengthMultiplier = 1 + (strength / 100.0);
+                    double totalDamage = baseDamage * strengthMultiplier;
+                    double strengthDamage = totalDamage - baseDamage;
+
+                    event.setDamage(totalDamage);
+
+                    player.sendMessage(ChatColor.GRAY + "---------");
+                    player.sendMessage(ChatColor.WHITE + " - Dégâts de base: " + baseDamage + " ⚔");
+                    if (strengthDamage > 0) {
+                        player.sendMessage(ChatColor.RED + " - Bonus de force: " + Math.round(strengthDamage) + " \uD83D\uDC89");
+                        player.sendMessage(ChatColor.YELLOW + " - Dégâts totaux : " + totalDamage + " ⚔ + \uD83D\uDC89 ");
+                    }
+                    player.sendMessage(ChatColor.GRAY + "---------");
+
                 }
-
-                // Calculer les dégâts totaux
-                double totalDamage = baseDamage * strengthMultiplier;
-
-                // Appliquer les dégâts calculés à l'entité
-                event.setDamage(totalDamage);
-
-                // Envoyer un message au joueur avec les dégâts infligés
-                player.sendMessage(ChatColor.GRAY + "---------");
-                player.sendMessage(ChatColor.WHITE + " - Dégâts de base: " + baseDamage + " ⚔");
-                if (strengthDamage > 0) {
-                    player.sendMessage(ChatColor.RED + " - Bonus de force: " + Math.round(strengthDamage) + " \uD83D\uDC89");
-                    player.sendMessage(ChatColor.YELLOW + " - Dégâts totaux : " + totalDamage + " ⚔ + \uD83D\uDC89 ");
+                catch (Exception e){
+                    sendHavaError(player, e.toString());
                 }
-                player.sendMessage(ChatColor.GRAY + "---------");
 
             }
 
@@ -166,6 +204,60 @@ public class HavaEvents implements Listener {
         }
     }
 
+    @EventHandler
+    public void onPlayerChat(AsyncPlayerChatEvent event) {
+        Player player = event.getPlayer();
+        UUID playerId = player.getUniqueId();
+
+        if (player.hasMetadata(HavaNBT.GetRenameItem())) {
+            event.setCancelled(true);
+
+            String newName = event.getMessage();
+            List<MetadataValue> metadataValues = player.getMetadata(HavaNBT.GetRenameItem());
+
+            if (metadataValues.isEmpty()) {
+                sendHavaError(player, "Erreur : aucun item à renommer.");
+                return;
+            }
+
+            String uniqueId = metadataValues.get(0).asString();
+
+            try {
+                HavaItems item = HavaItemsUtils.loadItem(uniqueId);
+                if (item == null) {
+                    sendHavaError(player, "Erreur : l'item n'existe pas.");
+                    return;
+                }
+
+                ItemStack itemStack = item.getItem();
+                ItemMeta meta = itemStack.getItemMeta();
+                if (meta != null) {
+                    meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', newName));
+                    itemStack.setItemMeta(meta);
+                }
+
+                item.setItem(itemStack);
+
+                player.sendMessage(ChatColor.GREEN + "Item renommé en : " + ChatColor.RESET + meta.getDisplayName());
+                player.removeMetadata(HavaNBT.GetRenameItem(), getPlugin());
+
+                // Annuler la tâche programmée
+                BukkitRunnable task = HavaPouce.getTasks().remove(playerId);
+                if (task != null) {
+                    task.cancel();
+                }
+
+                // Utilisez une tâche synchrone pour ouvrir l'inventaire
+                Bukkit.getScheduler().runTask(getPlugin(), () -> {
+                    player.openInventory(HavaFixedGui.GetEditItemFixedGui(item));
+                    player.setMetadata(HavaNBT.GetNBTGuiProtect(), new FixedMetadataValue(getPlugin(), HavaNBT.GetNBTGuiProtect()));
+                });
+
+            } catch (Exception e) {
+                sendHavaError(player, "Erreur lors de la mise à jour de l'item : " + e.getMessage());
+            }
+        }
+    }
 
 }
 

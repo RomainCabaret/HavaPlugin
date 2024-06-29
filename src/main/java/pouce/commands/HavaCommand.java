@@ -1,5 +1,6 @@
 package pouce.commands;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
@@ -10,6 +11,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import pouce.gui.HavaGui;
 import pouce.gui.HavaGuiItem;
 import pouce.items.HavaDistanceItems;
@@ -268,8 +271,16 @@ public class HavaCommand implements CommandExecutor {
                                         StringBuilder nbtData = new StringBuilder("§8§l━━━━━━━━━━━━\n");
 
                                         for (NamespacedKey key : container.getKeys()) {
-                                            String value = container.get(key, PersistentDataType.STRING);
-                                            nbtData.append("§f§l -  " + key.getKey()).append(" ➤ §7").append(value).append("\n");
+                                            if (container.has(key, PersistentDataType.STRING)) {
+                                                String value = container.get(key, PersistentDataType.STRING);
+                                                nbtData.append("§f§l -  " + key.getKey()).append(" ➤ §7").append(value).append("\n");
+                                            } else if (container.has(key, PersistentDataType.INTEGER)) {
+                                                Integer value = container.get(key, PersistentDataType.INTEGER);
+                                                nbtData.append("§f§l -  " + key.getKey()).append(" ➤ §7").append(value).append("\n");
+
+                                            } else{
+                                                nbtData.append("§f§l -  " + key.getKey()).append(" ➤ §7").append("VALEUR NON RECONNUE (TYPE INCORRECT)").append("\n");
+                                            }
                                         }
                                         nbtData.append("§8§l━━━━━━━━━━━━");
 
@@ -402,12 +413,14 @@ public class HavaCommand implements CommandExecutor {
                                         HavaMeleeItems item = new HavaMeleeItems(itemStack);
                                         HavaItemsUtils.saveItem(item);
                                         sendHavaMessage(player, "Item Melee enregistré.");
+                                        player.getInventory().remove(itemStack);
                                         return true;
                                     }
                                     case "distance": {
                                         HavaDistanceItems item = new HavaDistanceItems(itemStack);
                                         HavaItemsUtils.saveItem(item);
                                         sendHavaMessage(player, "Item Distance enregistré.");
+                                        player.getInventory().remove(itemStack);
                                         return true;
                                     }
                                     case "utilitaire": {
@@ -429,6 +442,24 @@ public class HavaCommand implements CommandExecutor {
                         sendHavaMessage(player, "Utilisation : /donjonitems add <type>");
                         return true;
                     }
+                }
+                case "vision": {
+                    if(args.length == 0){
+                        if(player.hasPotionEffect(PotionEffectType.NIGHT_VISION)){
+                            player.removePotionEffect(PotionEffectType.NIGHT_VISION);
+                            sendHavaMessage(player, "Effet de vision nocturne désactivé !");
+                        }else {
+                            PotionEffect nightVision = new PotionEffect(PotionEffectType.NIGHT_VISION, PotionEffect.INFINITE_DURATION, 0, false, false);
+                            player.addPotionEffect(nightVision);
+                            sendHavaMessage(player, "Effet de vision nocturne activé !");
+                        }
+                        return true;
+                    }
+                    else {
+                        sendHavaMessage(player, "Utilisation : /vision");
+                        return true;
+                    }
+
                 }
                 default:
                     sendHavaMessage(player, "Commande inconnue.");

@@ -6,6 +6,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import pouce.commands.HavaCommand;
 import pouce.events.HavaEvents;
 import pouce.gui.HavaGui;
@@ -18,7 +19,14 @@ import pouce.items.rarity.HavaRarity;
 import pouce.items.utils.HavaItemsUtils;
 import pouce.tabs.HavaTabCompleter;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 public final class HavaPouce extends JavaPlugin {
+
+    private static final Map<UUID, BukkitRunnable> renameTasks = new HashMap<>();
+
 
     private static HavaPouce instance;
     private static boolean debugMod = true;
@@ -29,6 +37,7 @@ public final class HavaPouce extends JavaPlugin {
 
     public static boolean isDebugMod(){ return debugMod; }
     public static void changeDebugMod(){ debugMod = !debugMod; }
+    public static Map<UUID, BukkitRunnable> getTasks(){ return renameTasks; }
 
 
     @Override
@@ -57,6 +66,8 @@ public final class HavaPouce extends JavaPlugin {
         getCommand("nbt").setExecutor(command);
 
         getCommand("donjonitems").setExecutor(command);
+
+        getCommand("vision").setExecutor(command);
 
 
         //  --- EVENEMENTS ---
@@ -98,4 +109,5 @@ public final class HavaPouce extends JavaPlugin {
             player.sendMessage("(§f§lHava§9§lDev§f) ➺ " + ChatColor.WHITE + msg);
         }
     }
+
 }

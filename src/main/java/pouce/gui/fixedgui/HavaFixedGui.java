@@ -13,6 +13,7 @@ import pouce.gui.HavaGuiItem;
 import pouce.items.HavaDistanceItems;
 import pouce.items.HavaItems;
 import pouce.items.HavaMeleeItems;
+import pouce.items.HavaUtilitaireItems;
 import pouce.items.utils.HavaItemsUtils;
 import pouce.nbt.HavaNBT;
 
@@ -39,7 +40,7 @@ public class HavaFixedGui {
         gui.setItem(4, createItem(Material.DIAMOND_SWORD, "§7Distance"));
         gui.setItem(45, itemForward);
         gui.setItem(53, createItem(Material.REPEATER, ""));
-        List<ItemStack> itemsList = HavaItemsUtils.GetMeleeItems();
+        List<HavaMeleeItems> itemsList = HavaItemsUtils.GetMeleeItems();
 
         Set<Integer> allowedSlots = Set.of(10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43);
 
@@ -47,12 +48,15 @@ public class HavaFixedGui {
 
         for (int i = 0; i < 54; i++) {
             if (allowedSlots.contains(i) && currentIndexItem < itemsList.size()) {
-                ItemStack currentItem = itemsList.get(currentIndexItem);
-                ItemMeta currentMeta = itemsList.get(currentIndexItem).getItemMeta();
+
+                HavaMeleeItems meleeItems = itemsList.get(currentIndexItem);
+
+                ItemStack currentItem = meleeItems.getItem();
+                ItemMeta currentMeta = currentItem.getItemMeta();
 
                 NamespacedKey keyItemGet = new NamespacedKey(getPlugin(), HavaNBT.GetNBTGuiDonjonItemAction());
                 PersistentDataContainer containerItemGet = currentMeta.getPersistentDataContainer();
-                containerItemGet.set(keyItemGet, PersistentDataType.STRING, currentMeta.getDisplayName());
+                containerItemGet.set(keyItemGet, PersistentDataType.STRING, meleeItems.getUniqueName());
 
                 currentItem.setItemMeta(currentMeta);
                 gui.setItem(i, currentItem);
@@ -79,7 +83,7 @@ public class HavaFixedGui {
         gui.setItem(4, createItem(Material.CROSSBOW, "§8Distance"));
         gui.setItem(45, itemForward);
         gui.setItem(53, createItem(Material.REPEATER, ""));
-        List<ItemStack> itemsList = HavaItemsUtils.GetDistanceItems();
+        List<HavaDistanceItems> itemsList = HavaItemsUtils.GetDistanceItems();
 
         Set<Integer> allowedSlots = Set.of(10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43);
 
@@ -88,12 +92,15 @@ public class HavaFixedGui {
 
         for (int i = 0; i < 54; i++) {
             if (allowedSlots.contains(i) && currentIndexItem < itemsList.size()) {
-                ItemStack currentItem = itemsList.get(currentIndexItem);
-                ItemMeta currentMeta = itemsList.get(currentIndexItem).getItemMeta();
+
+                HavaDistanceItems distanceItems = itemsList.get(currentIndexItem);
+
+                ItemStack currentItem = distanceItems.getItem();
+                ItemMeta currentMeta = currentItem.getItemMeta();
 
                 NamespacedKey keyItemGet = new NamespacedKey(getPlugin(), HavaNBT.GetNBTGuiDonjonItemAction());
                 PersistentDataContainer containerItemGet = currentMeta.getPersistentDataContainer();
-                containerItemGet.set(keyItemGet, PersistentDataType.STRING, currentMeta.getDisplayName());
+                containerItemGet.set(keyItemGet, PersistentDataType.STRING, distanceItems.getUniqueName());
 
                 // Mise à jour de l'ItemMeta
                 currentItem.setItemMeta(currentMeta);
@@ -122,7 +129,7 @@ public class HavaFixedGui {
         gui.setItem(4, createItem(Material.END_CRYSTAL, "§dUtilitaire"));
         gui.setItem(45, itemForward);
         gui.setItem(53, createItem(Material.REPEATER, ""));
-        List<ItemStack> itemsList = HavaItemsUtils.GetUtilitaireItems();
+        List<HavaUtilitaireItems> itemsList = HavaItemsUtils.GetUtilitaireItems();
 
         Set<Integer> allowedSlots = Set.of(10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43);
 
@@ -131,12 +138,15 @@ public class HavaFixedGui {
 
         for (int i = 0; i < 54; i++) {
             if (allowedSlots.contains(i) && currentIndexItem < itemsList.size()) {
-                ItemStack currentItem = itemsList.get(currentIndexItem);
-                ItemMeta currentMeta = itemsList.get(currentIndexItem).getItemMeta();
+
+                HavaUtilitaireItems utilitaireItems = itemsList.get(currentIndexItem);
+
+                ItemStack currentItem = utilitaireItems.getItem();
+                ItemMeta currentMeta = currentItem.getItemMeta();
 
                 NamespacedKey keyItemGet = new NamespacedKey(getPlugin(), HavaNBT.GetNBTGuiDonjonItemAction());
                 PersistentDataContainer containerItemGet = currentMeta.getPersistentDataContainer();
-                containerItemGet.set(keyItemGet, PersistentDataType.STRING, currentMeta.getDisplayName());
+                containerItemGet.set(keyItemGet, PersistentDataType.STRING, utilitaireItems.getUniqueName());
 
                 currentItem.setItemMeta(currentMeta);
                 gui.setItem(i, currentItem);
@@ -148,6 +158,7 @@ public class HavaFixedGui {
 
     public static Inventory GetEditItemFixedGui(HavaItems item) {
         Inventory gui = createBorderedGui(5, "§8Edit Items", Material.BLUE_STAINED_GLASS_PANE);
+        ItemStack itemStack = HavaItemsUtils.GetItemStack(item);
 
         if(item instanceof HavaMeleeItems){
 
@@ -158,15 +169,31 @@ public class HavaFixedGui {
             NamespacedKey key = new NamespacedKey(getPlugin(), HavaNBT.GetNBTGuiEditDonjonItemAction());
 
 
-            gui.setItem(12, createItem(Material.LECTERN, "§3Nom", item.getItem(), key, "name"));
-            gui.setItem(14, createItem(Material.SPECTRAL_ARROW, "§6Degat (" + meleeItem.getDamage() + ")", item.getItem(), key, "damage"));
+            gui.setItem(12, createItem(Material.LECTERN, "§3Nom", item, key, "name"));
+            gui.setItem(14, createItem(Material.SPECTRAL_ARROW, "§6Degat (" + meleeItem.getDamage() + ")", item, key, "damage"));
 
-            gui.setItem(21, createItem(Material.OAK_SIGN, "§aLore", item.getItem(), key, "lore"));
-            gui.setItem(22, item.getItem());
-            gui.setItem(23, createItem(Material.TIPPED_ARROW, "§cForce (" + meleeItem.getStrength() + ")", item.getItem(), key, "strength"));
+            gui.setItem(21, createItem(Material.OAK_SIGN, meleeItem.getRarity().getFormattedName(), item, key, "rarity"));
+            gui.setItem(22, itemStack);
+            gui.setItem(23, createItem(Material.TIPPED_ARROW, "§cForce (" + meleeItem.getStrength() + ")", item, key, "strength"));
 
             gui.setItem(30, createItem(Material.HEART_OF_THE_SEA, "§3NBT"));
             gui.setItem(32, createItem(Material.GLOW_ITEM_FRAME, "§6Abilité"));
+
+            ItemStack itemForward = new ItemStack(Material.ARROW);
+            ItemMeta meta = itemForward.getItemMeta();
+
+
+            NamespacedKey keyBack = new NamespacedKey(getPlugin(), HavaNBT.GetNBTGuiDonjonNavAction());
+            PersistentDataContainer container = meta.getPersistentDataContainer();
+            container.set(keyBack, PersistentDataType.STRING, "backforwardToDonjonItemsMelee");
+            meta.setDisplayName("§7Retour");
+            itemForward.setItemMeta(meta);
+
+            gui.setItem(36, itemForward);
+
+            gui.setItem(44, createItem(Material.ANVIL, "§4Delete", item, key, "delete"));
+
+
         }
         if(item instanceof HavaDistanceItems){
             HavaDistanceItems distanceItem = (HavaDistanceItems) item;
@@ -176,15 +203,31 @@ public class HavaFixedGui {
             NamespacedKey key = new NamespacedKey(getPlugin(), HavaNBT.GetNBTGuiEditDonjonItemAction());
 
 
-            gui.setItem(12, createItem(Material.LECTERN, "§3Nom", item.getItem(), key, "name"));
-            gui.setItem(14, createItem(Material.SPECTRAL_ARROW, "§6Degat (" + distanceItem.getDamage() + ")", item.getItem(), key, "damage"));
+            gui.setItem(12, createItem(Material.LECTERN, "§3Nom", item, key, "name"));
+            gui.setItem(14, createItem(Material.SPECTRAL_ARROW, "§6Degat (" + distanceItem.getDamage() + ")", item, key, "damage"));
 
-            gui.setItem(21, createItem(Material.OAK_SIGN, "§aLore", item.getItem(), key, "lore"));
+            gui.setItem(21, createItem(Material.OAK_SIGN, distanceItem.getRarity().getFormattedName(), item, key, "rarity"));
             gui.setItem(22, item.getItem());
-            gui.setItem(23, createItem(Material.TIPPED_ARROW, "§cForce (" + distanceItem.getStrength() + ")", item.getItem(), key, "strength"));
+            gui.setItem(23, createItem(Material.TIPPED_ARROW, "§cForce (" + distanceItem.getStrength() + ")", item, key, "strength"));
 
             gui.setItem(30, createItem(Material.HEART_OF_THE_SEA, "§3NBT"));
             gui.setItem(32, createItem(Material.GLOW_ITEM_FRAME, "§6Abilité"));
+
+
+            ItemStack itemForward = new ItemStack(Material.ARROW);
+            ItemMeta meta = itemForward.getItemMeta();
+
+
+            NamespacedKey keyBack = new NamespacedKey(getPlugin(), HavaNBT.GetNBTGuiDonjonNavAction());
+            PersistentDataContainer container = meta.getPersistentDataContainer();
+            container.set(keyBack, PersistentDataType.STRING, "backforwardToDonjonItemsDistance");
+            meta.setDisplayName("§7Retour");
+            itemForward.setItemMeta(meta);
+
+            gui.setItem(36, itemForward);
+
+            gui.setItem(44, createItem(Material.ANVIL, "§4Delete", item, key, "delete"));
+
         }
 
         return gui;
@@ -212,7 +255,7 @@ public class HavaFixedGui {
         return createItem(material, name, null, null, null);
     }
 
-    private static ItemStack createItem(Material material, String name, ItemStack targetItem, NamespacedKey key, String value) {
+    private static ItemStack createItem(Material material, String name, HavaItems targetItem, NamespacedKey key, String value) {
 
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
@@ -223,7 +266,7 @@ public class HavaFixedGui {
             PersistentDataContainer container = meta.getPersistentDataContainer();
             NamespacedKey keyItemGet = new NamespacedKey(getPlugin(), HavaNBT.GetNBTGuiDonjonItemAction());
 
-            container.set(keyItemGet, PersistentDataType.STRING, targetItem.getItemMeta().getDisplayName());
+            container.set(keyItemGet, PersistentDataType.STRING, targetItem.getUniqueName());
             container.set(key, PersistentDataType.STRING, value);
         }
         item.setItemMeta(meta);

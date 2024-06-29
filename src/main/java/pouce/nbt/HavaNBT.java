@@ -8,6 +8,30 @@ public class HavaNBT {
     private static final String GUI_DONJON_NAV_ACTION = "guiDonjonNavAction";
     private static final String GUI_EDIT_DONJON_ITEM_ACTION = "guiEditDonjonItemAction";
 
+    // ITEM
+
+    private static final String ITEM_DONJON_ID = "itemDonjonID";
+    public static String GetItemDonjonID() {return ITEM_DONJON_ID;}
+
+    private static final String ITEM_DONJON_TYPE = "itemDonjonType";
+    public static String GetItemDonjonType() {return ITEM_DONJON_TYPE;}
+
+    private static final String ITEM_DAMAGE = "itemDamage";
+    public static String GetItemDamage(){return ITEM_DAMAGE;}
+
+    private static final String ITEM_STRENGTH = "itemStrength";
+    public static String GetItemStrength(){return ITEM_STRENGTH;}
+
+    private static final String ITEM_RARITY = "itemRarity";
+    public static String GetItemRarity(){return ITEM_RARITY;}
+
+
+
+//    TCHAT
+
+    private static final String RENAME_ITEM = "renameItem";
+
+
     public static String GetNBTGuiProtect() {
         return GUI_PROTECT;
     }
@@ -30,5 +54,13 @@ public class HavaNBT {
 
     public static String GetNBTGuiEditDonjonItemAction(){
         return GUI_EDIT_DONJON_ITEM_ACTION;
+    }
+
+
+
+//    TCHAT
+
+    public static String GetRenameItem(){
+        return RENAME_ITEM;
     }
 }

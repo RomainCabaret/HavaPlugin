@@ -22,5 +22,8 @@ commands:
   donjonitems:
     description: permet de manipuler les items donjon
     usage: /donjonitems
+  vision:
+    description: permet de toggle un effet de night vision
+    usage: /vision
 
 

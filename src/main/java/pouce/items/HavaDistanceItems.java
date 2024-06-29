@@ -5,6 +5,8 @@ import pouce.items.rarity.HavaRarity;
 import pouce.items.utils.HavaItemsUtils;
 
 public class HavaDistanceItems extends HavaItems{
+    private final String type = "distance";
+
     private int damage;
     private int strength;
 
@@ -26,6 +28,10 @@ public class HavaDistanceItems extends HavaItems{
 
     public int getStrength(){
         return strength;
+    }
+
+    public String getType(){
+        return type;
     }
 
     public void setDamage(int damage) {
