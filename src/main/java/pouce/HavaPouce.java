@@ -1,10 +1,12 @@
 package pouce;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import pouce.commands.HavaCommand;
@@ -16,12 +18,12 @@ import pouce.items.HavaItems;
 import pouce.items.HavaMeleeItems;
 import pouce.items.HavaUtilitaireItems;
 import pouce.items.rarity.HavaRarity;
+import pouce.items.spells.HavaSpell;
+import pouce.items.spells.weapons.HavaSpellFurieSanguinaire;
 import pouce.items.utils.HavaItemsUtils;
 import pouce.tabs.HavaTabCompleter;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public final class HavaPouce extends JavaPlugin {
 
@@ -42,7 +44,17 @@ public final class HavaPouce extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
         instance = this;
+
+        for (World world : Bukkit.getWorlds()) {
+            for (Entity entity : world.getEntitiesByClass(ArmorStand.class)) {
+                ArmorStand armorStand = (ArmorStand) entity;
+                if (armorStand.getPersistentDataContainer().has(new NamespacedKey(this, "donjonDeleted"), PersistentDataType.BYTE)) {
+                    armorStand.remove();
+                }
+            }
+        }
 
         saveDefaultConfig();
 
@@ -86,6 +98,10 @@ public final class HavaPouce extends JavaPlugin {
         HavaGui.loadGuisFromConfig();
         HavaGuiItem.loadItemsFromConfig();
         HavaItemsUtils.loadItemsConfig();
+
+        // INSTANCE
+
+        HavaSpell.addSpell("FurieSanguinaire", new HavaSpellFurieSanguinaire("FurieSanguinaire",  new ArrayList<String>(), 5));
 
     }
 

@@ -1,9 +1,8 @@
 package pouce.events;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -31,6 +30,7 @@ import pouce.gui.fixedgui.HavaFixedGui;
 import pouce.items.HavaDistanceItems;
 import pouce.items.HavaItems;
 import pouce.items.HavaMeleeItems;
+import pouce.items.spells.HavaSpellAction;
 import pouce.items.utils.HavaItemsUtils;
 import pouce.nbt.HavaNBT;
 
@@ -66,8 +66,14 @@ public class HavaEvents implements Listener {
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player) {
+
+
             Player player = (Player) event.getDamager();
             ItemStack itemInHand = player.getInventory().getItemInMainHand();
+            if(!itemInHand.hasItemMeta()) {
+                return;
+            }
+
             ItemMeta itemMeta = itemInHand.getItemMeta();
 
             NamespacedKey keyDonjonType = new NamespacedKey(getPlugin(), HavaNBT.GetItemDonjonType());
@@ -101,10 +107,10 @@ public class HavaEvents implements Listener {
                     event.setDamage(totalDamage);
 
                     player.sendMessage(ChatColor.GRAY + "---------");
-                    player.sendMessage(ChatColor.WHITE + " - Dégâts de base: " + baseDamage + " ⚔");
+                    player.sendMessage(ChatColor.WHITE + " - Dégâts de base: " + baseDamage + " \uD83E\uDE93");
                     if (strengthDamage > 0) {
-                        player.sendMessage(ChatColor.RED + " - Bonus de force: " + Math.round(strengthDamage) + " \uD83D\uDC89");
-                        player.sendMessage(ChatColor.YELLOW + " - Dégâts totaux : " + totalDamage + " ⚔ + \uD83D\uDC89 ");
+                        player.sendMessage(ChatColor.RED + " - Bonus de force: " + Math.round(strengthDamage) + " \uD83D\uDCA5");
+                        player.sendMessage(ChatColor.YELLOW + " - Dégâts totaux : " + Math.round(totalDamage) + " \uD83E\uDE93 + \uD83D\uDCA5 ");
                     }
                     player.sendMessage(ChatColor.GRAY + "---------");
 
@@ -188,6 +194,10 @@ public class HavaEvents implements Listener {
 
         if(item != null){
             if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
+                if(item.hasItemMeta()){
+                    HavaSpellAction.onDonjonSpellUse(player, item, event);
+                }
+
                 if(item.getType() == Material.RECOVERY_COMPASS) {
                     if(item.getItemMeta().getDisplayName().equalsIgnoreCase("§7NavMenu")){
                         HavaGui gui = HavaGui.getGuiByName("nav");

@@ -39,17 +39,17 @@ public enum HavaRarity {
     public String getFormattedName() {
         switch (type) {
             case "COMMUN":
-                return "§f§lCOMMUN";
+                return "§f§l[ ⛆⛆⛆⛆ COMMUN ⛆⛆⛆⛆ ]";
             case "ATYPIQUE":
-                return "§2§lATYPIQUE";
+                return "§2§l[ ⛆⛆⛆⛆ ATYPIQUE ⛆⛆⛆⛆ ]";
             case "RARE":
-                return "§9§lRARE";
+                return "§9§l[ ⛆⛆⛆⛆ RARE ⛆⛆⛆⛆ ]";
             case "EPIQUE":
-                return "§5§lEPIQUE";
+                return "§5§l[ ⛆⛆⛆⛆ EPIQUE ⛆⛆⛆⛆ ]";
             case "LEGENDAIRE":
-                return "§e§lLEGENDAIRE";
+                return "§e§l[ ⛆⛆⛆⛆ LEGENDAIRE ⛆⛆⛆⛆ ]";
             case "MYTHIQUE":
-                return "§b§lMYTHIQUE";
+                return "§b§l[ ⛆⛆⛆⛆ MYTHIQUE ⛆⛆⛆⛆ ]";
             default:
                 return "§4§lERROR";
         }

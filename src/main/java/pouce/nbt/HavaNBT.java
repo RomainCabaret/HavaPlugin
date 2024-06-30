@@ -25,6 +25,9 @@ public class HavaNBT {
     private static final String ITEM_RARITY = "itemRarity";
     public static String GetItemRarity(){return ITEM_RARITY;}
 
+    private static final String ITEM_SPELL = "itemSpell";
+    public static String GetItemSpell(){return ITEM_SPELL;}
+
 
 
 //    TCHAT

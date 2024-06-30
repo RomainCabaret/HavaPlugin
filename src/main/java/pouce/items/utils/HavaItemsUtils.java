@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -149,6 +150,8 @@ public class HavaItemsUtils {
         ItemStack itemStack = item.getItem();
         ItemMeta itemMeta = itemStack.getItemMeta();
 
+        itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_UNBREAKABLE);
+
         List<String> itemLore = new ArrayList<>();
 
         PersistentDataContainer container = itemMeta.getPersistentDataContainer();
@@ -159,17 +162,21 @@ public class HavaItemsUtils {
         NamespacedKey keyStrength = new NamespacedKey(getPlugin(), HavaNBT.GetItemStrength());
         NamespacedKey keyRarity = new NamespacedKey(getPlugin(), HavaNBT.GetItemRarity());
 
-
-
-        itemLore.add(item.getRarity().getFormattedName());
         container.set(keyID, PersistentDataType.STRING, item.getUniqueName());
         container.set(keyRarity, PersistentDataType.STRING, item.getRarity().toString());
+        itemLore.add("§f -=§m============================§r§f=- ");
+
+        itemLore.add("");
+        itemLore.add("  " +  item.getRarity().getFormattedName() + " ");
+
+        String mark = " §c>§6>§e> ";
 
 
         if(item instanceof HavaMeleeItems){
             HavaMeleeItems meleeItems = (HavaMeleeItems) item;
-            itemLore.add("§7Degat :§6 " + meleeItems.getDamage());
-            itemLore.add("§7Force : §c" + meleeItems.getStrength());
+            itemLore.add("");
+            itemLore.add(mark + "§7Dégat ➡§6 " + meleeItems.getDamage() + "\uD83E\uDE93");
+            itemLore.add(mark + "§7Force ➡§c " + meleeItems.getStrength() + "\uD83D\uDCA5");
             container.set(keyItemType, PersistentDataType.STRING, meleeItems.getType());
             container.set(keyDamage, PersistentDataType.INTEGER, meleeItems.getDamage());
             container.set(keyStrength, PersistentDataType.INTEGER, meleeItems.getStrength());
@@ -177,8 +184,8 @@ public class HavaItemsUtils {
         }
         else if(item instanceof HavaDistanceItems){
             HavaDistanceItems distanceItems = (HavaDistanceItems) item;
-            itemLore.add("§7Degat : §6" + distanceItems.getDamage());
-            itemLore.add("§7Force : §c" + distanceItems.getStrength());
+            itemLore.add(mark + "§7Dégat ➡§6 " + distanceItems.getDamage() + "\uD83E\uDE93");
+            itemLore.add(mark + "§7Force ➡§c " + distanceItems.getStrength() + "\uD83D\uDCA5");
             container.set(keyItemType, PersistentDataType.STRING, distanceItems.getType());
             container.set(keyDamage, PersistentDataType.INTEGER, distanceItems.getDamage());
             container.set(keyStrength, PersistentDataType.INTEGER, distanceItems.getStrength());
@@ -188,8 +195,14 @@ public class HavaItemsUtils {
             container.set(keyItemType, PersistentDataType.STRING, utilitaireItems.getType());
         }
 
+        itemLore.add("");
+
+        itemLore.add("§f -=§m============================§r§f=- ");
 
         itemMeta.setLore(itemLore);
+
+        itemMeta.setUnbreakable(true);
+
         itemStack.setItemMeta(itemMeta);
 
         return itemStack;
