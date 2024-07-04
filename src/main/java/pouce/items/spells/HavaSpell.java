@@ -1,14 +1,8 @@
 package pouce.items.spells;
 
-import pouce.gui.HavaGui;
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public abstract class HavaSpell {
-
-    private static Map<String, HavaSpell> spellMap = new HashMap<>();
 
     private String uniqueName;
     private List<String> Lore;
@@ -39,13 +33,4 @@ public abstract class HavaSpell {
         this.cooldown = cooldown;
     }
 
-    // STATIC
-
-    public static HavaSpell getSpell(String uniqueName){
-        return spellMap.get(uniqueName);
-    }
-
-    public static void addSpell(String uniqueName, HavaSpell spell){
-        spellMap.put(uniqueName, spell);
-    }
 }

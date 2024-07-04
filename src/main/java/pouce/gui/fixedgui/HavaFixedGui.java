@@ -4,7 +4,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -14,14 +16,14 @@ import pouce.items.HavaDistanceItems;
 import pouce.items.HavaItems;
 import pouce.items.HavaMeleeItems;
 import pouce.items.HavaUtilitaireItems;
+import pouce.items.spells.HavaSpell;
+import pouce.items.spells.utils.HavaSpellUtils;
 import pouce.items.utils.HavaItemsUtils;
 import pouce.nbt.HavaNBT;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-import static pouce.HavaPouce.getPlugin;
-import static pouce.HavaPouce.sendHavaDev;
+import static pouce.HavaPouce.*;
 
 public class HavaFixedGui {
     public static Inventory GetMeleeItemFixedGui() {
@@ -51,7 +53,7 @@ public class HavaFixedGui {
 
                 HavaMeleeItems meleeItems = itemsList.get(currentIndexItem);
 
-                ItemStack currentItem = meleeItems.getItem();
+                ItemStack currentItem = meleeItems.getItem().clone();
                 ItemMeta currentMeta = currentItem.getItemMeta();
 
                 NamespacedKey keyItemGet = new NamespacedKey(getPlugin(), HavaNBT.GetNBTGuiDonjonItemAction());
@@ -95,14 +97,13 @@ public class HavaFixedGui {
 
                 HavaDistanceItems distanceItems = itemsList.get(currentIndexItem);
 
-                ItemStack currentItem = distanceItems.getItem();
+                ItemStack currentItem = distanceItems.getItem().clone();
                 ItemMeta currentMeta = currentItem.getItemMeta();
 
                 NamespacedKey keyItemGet = new NamespacedKey(getPlugin(), HavaNBT.GetNBTGuiDonjonItemAction());
                 PersistentDataContainer containerItemGet = currentMeta.getPersistentDataContainer();
                 containerItemGet.set(keyItemGet, PersistentDataType.STRING, distanceItems.getUniqueName());
 
-                // Mise à jour de l'ItemMeta
                 currentItem.setItemMeta(currentMeta);
 
                 gui.setItem(i, currentItem);
@@ -141,7 +142,7 @@ public class HavaFixedGui {
 
                 HavaUtilitaireItems utilitaireItems = itemsList.get(currentIndexItem);
 
-                ItemStack currentItem = utilitaireItems.getItem();
+                ItemStack currentItem = utilitaireItems.getItem().clone();
                 ItemMeta currentMeta = currentItem.getItemMeta();
 
                 NamespacedKey keyItemGet = new NamespacedKey(getPlugin(), HavaNBT.GetNBTGuiDonjonItemAction());
@@ -177,7 +178,7 @@ public class HavaFixedGui {
             gui.setItem(23, createItem(Material.TIPPED_ARROW, "§cForce (" + meleeItem.getStrength() + ")", item, key, "strength"));
 
             gui.setItem(30, createItem(Material.HEART_OF_THE_SEA, "§3NBT"));
-            gui.setItem(32, createItem(Material.GLOW_ITEM_FRAME, "§6Abilité"));
+            gui.setItem(32, createItem(Material.GLOW_ITEM_FRAME, "§6Abilité", item, key, "ability"));
 
             ItemStack itemForward = new ItemStack(Material.ARROW);
             ItemMeta meta = itemForward.getItemMeta();
@@ -211,7 +212,7 @@ public class HavaFixedGui {
             gui.setItem(23, createItem(Material.TIPPED_ARROW, "§cForce (" + distanceItem.getStrength() + ")", item, key, "strength"));
 
             gui.setItem(30, createItem(Material.HEART_OF_THE_SEA, "§3NBT"));
-            gui.setItem(32, createItem(Material.GLOW_ITEM_FRAME, "§6Abilité"));
+            gui.setItem(32, createItem(Material.GLOW_ITEM_FRAME, "§6Abilité", item, key, "ability"));
 
 
             ItemStack itemForward = new ItemStack(Material.ARROW);
@@ -233,6 +234,50 @@ public class HavaFixedGui {
         return gui;
 
     }
+    public static Inventory GetEditSpellItemFixedGui(HavaItems item) {
+        Inventory gui = createBorderedGui(6, "§8Items spell", Material.GRAY_STAINED_GLASS_PANE);
+
+        NamespacedKey key = new NamespacedKey(getPlugin(), HavaNBT.GetNBTGuiEditDonjonItemAction());
+
+        gui.setItem(4, createItem(Material.GLOW_ITEM_FRAME, "§Items spell"));
+        gui.setItem(45, createItem(Material.ARROW, "§7Retour", item, key, "backforwardToDonjonItemsEdit"));
+
+        Map<String, HavaSpell> spellList = HavaSpellUtils.getSpellMap();
+
+        Set<Integer> allowedSlots = Set.of(10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43);
+
+        List<String> spellNames = new ArrayList<>(spellList.keySet());
+        int currentIndexItem = 0;
+
+        for (int i = 0; i < 54; i++) {
+            if (allowedSlots.contains(i) && currentIndexItem < spellNames.size()) {
+
+                String spellname = spellNames.get(currentIndexItem);
+
+                ItemStack currentItem = createItem(Material.ITEM_FRAME, "§7" + spellname, item, key, "editspell");
+                ItemMeta meta = currentItem.getItemMeta();
+
+                HavaMeleeItems meleeItems = (HavaMeleeItems) HavaItemsUtils.loadItem(item.getUniqueName());
+
+                if(Objects.equals(spellname, meleeItems.getSpell().getUniqueName())){
+                    meta.setDisplayName("§2§n" + spellname);
+                    meta.addEnchant(Enchantment.DAMAGE_ALL, 1, true);
+                    meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                }
+
+                PersistentDataContainer container = meta.getPersistentDataContainer();
+
+                NamespacedKey keySelectedSpell = new NamespacedKey(getPlugin(), HavaNBT.GetGuiDonjonSelectedSpellAction());
+                container.set(keySelectedSpell, PersistentDataType.STRING, spellname);
+                currentItem.setItemMeta(meta);
+
+                gui.setItem(i, currentItem);
+
+                currentIndexItem++;
+            }
+        }
+        return gui;
+    }
 
     private static Inventory createBorderedGui(int size, String name, Material border) {
 
@@ -246,7 +291,6 @@ public class HavaFixedGui {
                 gui.setItem(i, createItem(border, ""));
             }
         }
-
 
         return gui;
     }

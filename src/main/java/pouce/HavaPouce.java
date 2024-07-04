@@ -19,6 +19,7 @@ import pouce.items.HavaMeleeItems;
 import pouce.items.HavaUtilitaireItems;
 import pouce.items.rarity.HavaRarity;
 import pouce.items.spells.HavaSpell;
+import pouce.items.spells.utils.HavaSpellUtils;
 import pouce.items.spells.weapons.HavaSpellFurieSanguinaire;
 import pouce.items.utils.HavaItemsUtils;
 import pouce.tabs.HavaTabCompleter;
@@ -95,13 +96,11 @@ public final class HavaPouce extends JavaPlugin {
 
         //   --- CONFIG  ---
 
+        HavaSpellUtils.loadSpell();
         HavaGui.loadGuisFromConfig();
         HavaGuiItem.loadItemsFromConfig();
         HavaItemsUtils.loadItemsConfig();
 
-        // INSTANCE
-
-        HavaSpell.addSpell("FurieSanguinaire", new HavaSpellFurieSanguinaire("FurieSanguinaire",  new ArrayList<String>(), 5));
 
     }
 

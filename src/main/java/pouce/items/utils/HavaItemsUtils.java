@@ -21,6 +21,8 @@ import pouce.items.HavaItems;
 import pouce.items.HavaMeleeItems;
 import pouce.items.HavaUtilitaireItems;
 import pouce.items.rarity.HavaRarity;
+import pouce.items.spells.HavaSpell;
+import pouce.items.spells.utils.HavaSpellUtils;
 import pouce.nbt.HavaNBT;
 
 
@@ -62,7 +64,8 @@ public class HavaItemsUtils {
             if ("melee".equalsIgnoreCase(donjonType)) {
                 int damage = customConfig.getInt(path + ".damage");
                 int strength = customConfig.getInt(path + ".strength");
-                item = new HavaMeleeItems(uniqueName, rarity, itemStack, damage, strength);
+                HavaSpell spell = HavaSpellUtils.getSpell(customConfig.getString(path + ".spell"));
+                item = new HavaMeleeItems(uniqueName, rarity, itemStack, damage, strength, spell);
             } else if ("distance".equalsIgnoreCase(donjonType)) {
                 int damage = customConfig.getInt(path + ".damage");
                 int strength = customConfig.getInt(path + ".strength");
@@ -93,6 +96,7 @@ public class HavaItemsUtils {
             customConfig.set(path + ".donjonType", "melee");
             customConfig.set(path + ".damage", meleeItem.getDamage());
             customConfig.set(path + ".strength", meleeItem.getStrength());
+            customConfig.set(path + ".spell", meleeItem.getSpell().getUniqueName());
             save();
             return true;
         } else if (item instanceof HavaDistanceItems){
@@ -161,6 +165,7 @@ public class HavaItemsUtils {
         NamespacedKey keyDamage = new NamespacedKey(getPlugin(), HavaNBT.GetItemDamage());
         NamespacedKey keyStrength = new NamespacedKey(getPlugin(), HavaNBT.GetItemStrength());
         NamespacedKey keyRarity = new NamespacedKey(getPlugin(), HavaNBT.GetItemRarity());
+        NamespacedKey keySpell = new NamespacedKey(getPlugin(), HavaNBT.GetItemSpell());
 
         container.set(keyID, PersistentDataType.STRING, item.getUniqueName());
         container.set(keyRarity, PersistentDataType.STRING, item.getRarity().toString());
@@ -180,7 +185,9 @@ public class HavaItemsUtils {
             container.set(keyItemType, PersistentDataType.STRING, meleeItems.getType());
             container.set(keyDamage, PersistentDataType.INTEGER, meleeItems.getDamage());
             container.set(keyStrength, PersistentDataType.INTEGER, meleeItems.getStrength());
-
+            container.set(keySpell, PersistentDataType.STRING, meleeItems.getSpell().getUniqueName());
+            itemLore.add("");
+            itemLore.addAll(meleeItems.getSpell().getLore());
         }
         else if(item instanceof HavaDistanceItems){
             HavaDistanceItems distanceItems = (HavaDistanceItems) item;

@@ -7,6 +7,10 @@ public class HavaNBT {
     private static final String GUI_DONJON_ITEM_ACTION = "guiDonjonItemAction";
     private static final String GUI_DONJON_NAV_ACTION = "guiDonjonNavAction";
     private static final String GUI_EDIT_DONJON_ITEM_ACTION = "guiEditDonjonItemAction";
+    private static final String GUI_DONJON_SELECTED_SPELL_ACTION = "guiForwardDonjonNavAction";
+    public static String GetGuiDonjonSelectedSpellAction() {
+        return GUI_DONJON_SELECTED_SPELL_ACTION;
+    }
 
     // ITEM
 

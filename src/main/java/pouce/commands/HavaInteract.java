@@ -21,6 +21,8 @@ import pouce.items.HavaItems;
 import pouce.items.HavaMeleeItems;
 import pouce.items.HavaUtilitaireItems;
 import pouce.items.rarity.HavaRarity;
+import pouce.items.spells.HavaSpell;
+import pouce.items.spells.utils.HavaSpellUtils;
 import pouce.items.utils.HavaItemsUtils;
 import pouce.nbt.HavaNBT;
 
@@ -254,6 +256,46 @@ public class HavaInteract {
                         else {
                             sendHavaError(player, "Le type de l'item n'est pas reconnus");
                         }
+                        break;
+                    case "ability": {
+                        Inventory gui = GetEditSpellItemFixedGui(targerItem);
+                        player.openInventory(gui);
+                        player.setMetadata(HavaNBT.GetNBTGuiProtect(), new FixedMetadataValue(getPlugin(), HavaNBT.GetNBTGuiProtect()));
+                        break;
+                    }
+                    case "editspell": {
+                        NamespacedKey keySelectedSpell = new NamespacedKey(getPlugin(), HavaNBT.GetGuiDonjonSelectedSpellAction());
+                        String selectedSpell = item.getItemMeta().getPersistentDataContainer().get(keySelectedSpell, PersistentDataType.STRING);
+
+                        HavaSpell spell = HavaSpellUtils.getSpell(selectedSpell);
+
+                        if(spell == null){
+                            sendHavaError(player, "L'item n'est pas un spell valide");
+                            return;
+                        }
+
+                        if(targerItem instanceof HavaMeleeItems){
+                            HavaMeleeItems meleeItem = (HavaMeleeItems) targerItem;
+                            meleeItem.setSpell(spell);
+                            sendHavaMessage(player, "Spell modifié en " + selectedSpell);
+                        }
+
+                        if(targerItem instanceof HavaDistanceItems){
+                            sendHavaError(player, "PAS ENCORE FONCTIONNEL");
+                            return;
+                        }
+
+                        Inventory gui = GetEditItemFixedGui(targerItem);
+                        player.openInventory(gui);
+                        player.setMetadata(HavaNBT.GetNBTGuiProtect(), new FixedMetadataValue(getPlugin(), HavaNBT.GetNBTGuiProtect()));
+                        break;
+                    }
+                    case "backforwardToDonjonItemsEdit": {
+                        Inventory gui = GetEditItemFixedGui(targerItem);
+                        player.openInventory(gui);
+                        player.setMetadata(HavaNBT.GetNBTGuiProtect(), new FixedMetadataValue(getPlugin(), HavaNBT.GetNBTGuiProtect()));
+                        break;
+                    }
 
                 }
             }

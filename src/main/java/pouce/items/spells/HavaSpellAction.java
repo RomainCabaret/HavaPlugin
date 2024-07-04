@@ -6,6 +6,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import pouce.items.spells.utils.HavaSpellUtils;
 import pouce.items.spells.weapons.HavaSpellFurieSanguinaire;
 import pouce.nbt.HavaNBT;
 
@@ -26,25 +27,32 @@ public class HavaSpellAction  {
             return;
         }
 
-        HavaSpell spell = HavaSpell.getSpell(spellId);
+        HavaSpell spell = HavaSpellUtils.getSpell(spellId);
 
         if(spell == null) {
             return;
         }
 
+        if (HavaCooldown.isOnCooldown(player, spellId)) {
+            long timeRemaining = HavaCooldown.getCooldownRemaining(player, spellId) / 1000;
+            player.sendMessage("§f[§3Cooldowns§f] §7Veuillez patienter " + (timeRemaining + 1) + " secondes.");
+            return;
+        }
 
         switch(spellId) {
             case "FurieSanguinaire":{
                 HavaSpellFurieSanguinaire furieSanguinaire = (HavaSpellFurieSanguinaire) spell;
                 furieSanguinaire.useSpell(player, item, event);
+                HavaCooldown.setCooldown(player, spellId, (long) (furieSanguinaire.getCooldown() * 1000)); // Convertir les secondes en millisecondes
+                return;
+            }
+            case "none":{
+                sendHavaMessage(player, "spell none");
                 return;
             }
             default: {
                 sendHavaError(player, "Le spell n'est pas reconnu");
             }
         }
-
-
-
     }
 }

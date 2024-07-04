@@ -16,7 +16,7 @@ import pouce.items.spells.HavaSpell;
 import java.util.List;
 
 import static pouce.HavaPouce.getPlugin;
-import static pouce.HavaPouce.sendHavaError;
+import static pouce.HavaPouce.sendHavaDev;
 
 public class HavaSpellFurieSanguinaire extends HavaSpell {
 
@@ -25,9 +25,7 @@ public class HavaSpellFurieSanguinaire extends HavaSpell {
     }
 
     public void useSpell(Player player, ItemStack item, PlayerInteractEvent event) {
-
-
-        player.playSound(player, Sound.ENTITY_WOLF_GROWL, 1 ,1.5f );
+        player.playSound(player, Sound.ENTITY_WOLF_GROWL, 1, 1.5f);
 
         // Crée un BukkitRunnable pour gérer le lancement des haches avec un intervalle
         new BukkitRunnable() {
@@ -35,7 +33,6 @@ public class HavaSpellFurieSanguinaire extends HavaSpell {
 
             @Override
             public void run() {
-
                 if (axesLaunched >= 3) {
                     cancel();
                     return;
@@ -58,10 +55,10 @@ public class HavaSpellFurieSanguinaire extends HavaSpell {
                 armorStand.setItemInHand(new ItemStack(Material.IRON_AXE));
                 armorStand.getPersistentDataContainer().set(new NamespacedKey(getPlugin(), "donjonDeleted"), PersistentDataType.BYTE, (byte) 1);
 
-
                 // Crée un runnable pour déplacer l'ArmorStand
                 new BukkitRunnable() {
                     int ticksLived = 0;
+                    boolean hasDamaged = false;
 
                     @Override
                     public void run() {
@@ -74,7 +71,7 @@ public class HavaSpellFurieSanguinaire extends HavaSpell {
                         Location newLocation = armorStand.getLocation().add(adjustedDirection);
 
                         if (newLocation.getBlock().getType().isSolid()) {
-                            player.playSound(player, Sound.ITEM_SHIELD_BREAK, 1 ,0.2f );
+                            player.playSound(player, Sound.ITEM_SHIELD_BREAK, 1, 0.2f);
                             armorStand.remove();
                             cancel();
                             return;
@@ -82,10 +79,19 @@ public class HavaSpellFurieSanguinaire extends HavaSpell {
 
                         armorStand.teleport(newLocation);
 
-
                         for (Entity entity : armorStand.getWorld().getNearbyEntities(newLocation, 0.5, 0.5, 0.5)) {
                             if (entity != player && entity != armorStand && !entity.getPersistentDataContainer().has(new NamespacedKey(getPlugin(), "donjonDeleted"), PersistentDataType.BYTE) && entity instanceof LivingEntity) {
-                                ((LivingEntity) entity).damage(10, player);
+                                if (!hasDamaged) {
+                                    ((LivingEntity) entity).damage(10);
+                                    sendHavaDev(player, "degat");
+                                    hasDamaged = true;
+                                    new BukkitRunnable() {
+                                        @Override
+                                        public void run() {
+                                            hasDamaged = false;
+                                        }
+                                    }.runTaskLater(getPlugin(), 2); // Temps d'invulnérabilité avant de pouvoir infliger des dégâts à nouveau
+                                }
                                 armorStand.remove();
                                 cancel();
                                 break;
@@ -96,9 +102,9 @@ public class HavaSpellFurieSanguinaire extends HavaSpell {
                     }
                 }.runTaskTimer(getPlugin(), 1, 1);
 
-                player.playSound(player, Sound.ITEM_FLINTANDSTEEL_USE, 1 ,1.2f );
+                player.playSound(player, Sound.ITEM_FLINTANDSTEEL_USE, 1, 1.2f);
                 axesLaunched++;
             }
-        }.runTaskTimer(getPlugin(), 0, 1);
+        }.runTaskTimer(getPlugin(), 0, 2); // Délai entre chaque lancement de hache
     }
 }
