@@ -3,6 +3,7 @@ package pouce.tabs;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import pouce.entity.HavaEntityUtils;
 import pouce.gui.HavaGui;
 import pouce.gui.HavaGuiItem;
 
@@ -109,6 +110,17 @@ public class HavaTabCompleter implements TabCompleter {
                 }
             }
         }
+
+        // ---------- donjonmob ----------
+
+        else if (args.length == 1){
+            for (String mob : HavaEntityUtils.getEntityMap().keySet()) {
+                if(mob.toLowerCase().startsWith(args[0].toLowerCase())){
+                    suggestions.add(mob);
+                }
+            }
+        }
+
 
 
 

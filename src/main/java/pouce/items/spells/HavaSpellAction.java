@@ -8,6 +8,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import pouce.items.spells.utils.HavaSpellUtils;
 import pouce.items.spells.weapons.HavaSpellFurieSanguinaire;
+import pouce.items.spells.weapons.HavaSpellSpeedDash;
 import pouce.nbt.HavaNBT;
 
 import java.util.List;
@@ -44,10 +45,18 @@ public class HavaSpellAction  {
                 HavaSpellFurieSanguinaire furieSanguinaire = (HavaSpellFurieSanguinaire) spell;
                 furieSanguinaire.useSpell(player, item, event);
                 HavaCooldown.setCooldown(player, spellId, (long) (furieSanguinaire.getCooldown() * 1000)); // Convertir les secondes en millisecondes
+                player.setCooldown(item.getType(), (int) (furieSanguinaire.getCooldown() * 20));
+                return;
+            }
+            case "SpeedDash": {
+                HavaSpellSpeedDash dash = (HavaSpellSpeedDash) spell;
+                dash.useSpell(player, item, event);
+                HavaCooldown.setCooldown(player, spellId, (long) (dash.getCooldown() * 1000)); // Convertir les secondes en millisecondes
+                player.setCooldown(item.getType(), (int) (dash.getCooldown() * 20));
+
                 return;
             }
             case "none":{
-                sendHavaMessage(player, "spell none");
                 return;
             }
             default: {

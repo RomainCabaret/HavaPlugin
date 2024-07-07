@@ -253,11 +253,14 @@ public class HavaFixedGui {
             if (allowedSlots.contains(i) && currentIndexItem < spellNames.size()) {
 
                 String spellname = spellNames.get(currentIndexItem);
+                HavaSpell spell = spellList.get(spellname);
 
                 ItemStack currentItem = createItem(Material.ITEM_FRAME, "§7" + spellname, item, key, "editspell");
                 ItemMeta meta = currentItem.getItemMeta();
 
                 HavaMeleeItems meleeItems = (HavaMeleeItems) HavaItemsUtils.loadItem(item.getUniqueName());
+
+                meta.setLore(spell.getLore());
 
                 if(Objects.equals(spellname, meleeItems.getSpell().getUniqueName())){
                     meta.setDisplayName("§2§n" + spellname);

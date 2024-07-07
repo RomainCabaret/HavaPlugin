@@ -25,5 +25,8 @@ commands:
   vision:
     description: permet de toggle un effet de night vision
     usage: /vision
+  donjonmob:
+    description: permet de manipuler les mobs donjon
+    usage: /donjonmob
 
 

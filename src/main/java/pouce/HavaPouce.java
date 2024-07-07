@@ -10,6 +10,8 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import pouce.commands.HavaCommand;
+import pouce.entity.HavaEntity;
+import pouce.entity.HavaEntityUtils;
 import pouce.events.HavaEvents;
 import pouce.gui.HavaGui;
 import pouce.gui.HavaGuiItem;
@@ -82,6 +84,8 @@ public final class HavaPouce extends JavaPlugin {
 
         getCommand("vision").setExecutor(command);
 
+        getCommand("donjonmob").setExecutor(command);
+
 
         //  --- EVENEMENTS ---
 
@@ -93,9 +97,11 @@ public final class HavaPouce extends JavaPlugin {
         getCommand("guitem").setTabCompleter(tab);
         getCommand("nbt").setTabCompleter(tab);
         getCommand("donjonitems").setTabCompleter(tab);
+        getCommand("donjonmob").setTabCompleter(tab);
 
         //   --- CONFIG  ---
 
+        HavaEntityUtils.loadCustomEntity();
         HavaSpellUtils.loadSpell();
         HavaGui.loadGuisFromConfig();
         HavaGuiItem.loadItemsFromConfig();

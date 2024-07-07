@@ -3,11 +3,15 @@ package pouce.events;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -24,6 +28,9 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import pouce.HavaPouce;
+import pouce.entity.HavaEntity;
+import pouce.entity.HavaEntityAction;
+import pouce.entity.HavaEntityUtils;
 import pouce.gui.HavaGui;
 import pouce.gui.HavaGuiItem;
 import pouce.gui.fixedgui.HavaFixedGui;
@@ -39,6 +46,7 @@ import java.util.UUID;
 
 import static pouce.HavaPouce.*;
 import static pouce.commands.HavaInteract.*;
+import static pouce.entity.HavaEntityAction.onDonjonEntityKillPlayer;
 import static pouce.gui.HavaGui.getGuiByName;
 import static pouce.items.utils.HavaItemsUtils.UpdatePlayerInventoryItems;
 
@@ -64,12 +72,22 @@ public class HavaEvents implements Listener {
     }
 
     @EventHandler
+    public void OnPlayerDead(PlayerDeathEvent event){
+        HavaEntityAction.onDonjonEntityKillPlayer(event);
+    }
+
+    @EventHandler
+    public void onEntityDamage(EntityDamageEvent event) {
+        HavaEntityAction.onDonjonEntityIsHit(event);
+    }
+
+    @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player) {
 
-
             Player player = (Player) event.getDamager();
             ItemStack itemInHand = player.getInventory().getItemInMainHand();
+
             if(!itemInHand.hasItemMeta()) {
                 return;
             }
@@ -114,6 +132,33 @@ public class HavaEvents implements Listener {
                     }
                     player.sendMessage(ChatColor.GRAY + "---------");
 
+                    // Mettre à jour le nom de l'entité attaquée avec la nouvelle santé
+                    if (event.getEntity() instanceof LivingEntity) {
+                        LivingEntity entity = (LivingEntity) event.getEntity();
+
+                        NamespacedKey entityKey = new NamespacedKey(getPlugin(), HavaNBT.GetEntityDonjonType());
+                        if (entity.getPersistentDataContainer().has(entityKey, PersistentDataType.STRING)) {
+                            String entityName = entity.getPersistentDataContainer().get(entityKey, PersistentDataType.STRING);
+                            HavaEntity havaEntity = HavaEntityUtils.getEntity(entityName);
+
+                            if (havaEntity != null) {
+                                double currentHealth = entity.getHealth() - totalDamage;
+
+                                // Vérifier que la santé ne descend pas en dessous de zéro
+                                if (currentHealth < 0) {
+                                    currentHealth = 0;
+                                }
+
+                                // Formater la barre de vie de l'entité
+                                String healthBar = HavaEntityUtils.formatEntityHealth(havaEntity, currentHealth);
+
+                                // Mettre à jour le nom de l'entité
+                                entity.setCustomName(healthBar);
+                                entity.setCustomNameVisible(true);
+                            }
+                        }
+                    }
+
                 }
                 catch (Exception e){
                     sendHavaError(player, e.toString());
@@ -122,6 +167,11 @@ public class HavaEvents implements Listener {
             }
 
         }
+    }
+
+    @EventHandler
+    public void onEntityDeath(EntityDeathEvent event){
+        HavaEntityAction.onDonjonEntityIsDead(event);
     }
 
 //    INVENTORY

@@ -33,6 +33,11 @@ public class HavaNBT {
     public static String GetItemSpell(){return ITEM_SPELL;}
 
 
+    // MOBS
+
+    private static final String ENTITY_DONJON_TYPE = "entityDonjonType";
+    public static String GetEntityDonjonType() { return ENTITY_DONJON_TYPE;}
+
 
 //    TCHAT
 

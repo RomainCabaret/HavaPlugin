@@ -13,6 +13,8 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import pouce.entity.HavaEntity;
+import pouce.entity.HavaEntityUtils;
 import pouce.gui.HavaGui;
 import pouce.gui.HavaGuiItem;
 import pouce.items.HavaDistanceItems;
@@ -460,6 +462,22 @@ public class HavaCommand implements CommandExecutor {
                         return true;
                     }
 
+                }
+                case "donjonmob":{
+                    if(args.length == 1){
+                        HavaEntity entity = HavaEntityUtils.getEntity("CoruptHusk");
+
+                        if(entity == null){
+                            sendHavaError(player, "Mob inconnue");
+                            return true;
+                        }
+                        HavaEntityUtils.spawnEntity(entity, player.getLocation());
+                        return true;
+
+                    } else{
+                        sendHavaMessage(player, "Utilisation : /donjonmob");
+                        return true;
+                    }
                 }
                 default:
                     sendHavaMessage(player, "Commande inconnue.");
