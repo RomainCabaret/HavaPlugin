@@ -51,7 +51,7 @@ public class HavaEntityUtils {
         // Définir la table de drop
         List<HavaEntity.DropItem> dropTable = new ArrayList<>();
         dropTable.add(new HavaEntity.DropItem(new ItemStack(Material.GOLD_INGOT), 4, 15, 1.0)); // 100% de chance de drop entre 4 et 15 gold
-        dropTable.add(new HavaEntity.DropItem(new ItemStack(Material.DIAMOND_SWORD), 1, 1, 0.0001)); // 0.01% de chance de drop une épée
+        dropTable.add(new HavaEntity.DropItem(new ItemStack(Material.DIAMOND_SWORD), 1, 1, 1.0)); // 0.1% de chance de drop une épée
         havaCoruptHusk.setDropTable(dropTable);
 
 
@@ -71,6 +71,9 @@ public class HavaEntityUtils {
         customMob.getAttribute(org.bukkit.attribute.Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(entity.getDamage());
         customMob.getPersistentDataContainer().set(new NamespacedKey(getPlugin(), HavaNBT.GetEntityDonjonType()), PersistentDataType.STRING, entity.getName());
         customMob.setCustomNameVisible(true);
+        customMob.setPersistent(true);
+        customMob.setRemoveWhenFarAway(false);
+
 
         if (entity.isBaby() && customMob instanceof Ageable) {
             ((Ageable) customMob).setBaby();

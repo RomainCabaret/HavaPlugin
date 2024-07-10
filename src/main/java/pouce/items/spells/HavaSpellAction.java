@@ -1,6 +1,7 @@
 package pouce.items.spells;
 
 import org.bukkit.NamespacedKey;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -36,7 +37,8 @@ public class HavaSpellAction  {
 
         if (HavaCooldown.isOnCooldown(player, spellId)) {
             long timeRemaining = HavaCooldown.getCooldownRemaining(player, spellId) / 1000;
-            player.sendMessage("§f[§3Cooldowns§f] §7Veuillez patienter " + (timeRemaining + 1) + " secondes.");
+//            player.sendMessage("§f[§3Cooldowns§f] §7Veuillez patienter " + (timeRemaining + 1) + " secondes.");
+            player.playSound(player, Sound.BLOCK_NOTE_BLOCK_DIDGERIDOO, 1, 0);
             return;
         }
 

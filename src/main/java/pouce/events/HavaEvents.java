@@ -1,17 +1,11 @@
 package pouce.events;
 
 import org.bukkit.*;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -28,6 +22,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import pouce.HavaPouce;
+import pouce.boss.HavaBossAction;
 import pouce.entity.HavaEntity;
 import pouce.entity.HavaEntityAction;
 import pouce.entity.HavaEntityUtils;
@@ -72,13 +67,34 @@ public class HavaEvents implements Listener {
     }
 
     @EventHandler
-    public void OnPlayerDead(PlayerDeathEvent event){
+    public void OnPlayerDead(PlayerDeathEvent event) {
         HavaEntityAction.onDonjonEntityKillPlayer(event);
     }
 
     @EventHandler
+    public void OnCreatureSpawn(CreatureSpawnEvent event) {
+//        LivingEntity entity = event.getEntity();
+//        if (entity instanceof Slime) {
+//            Slime slime = (Slime) entity;
+//            if (slime.getSize() != 2) {
+//                event.setCancelled(true);
+//            }
+//        }
+//
+//        // Vérifier si l'entité est un MagmaCube
+//        if (entity instanceof MagmaCube) {
+//            MagmaCube magmaCube = (MagmaCube) entity;
+//            if (magmaCube.getSize() != 2) {
+//                event.setCancelled(true);
+//            }
+//        }
+    }
+
+
+    @EventHandler
     public void onEntityDamage(EntityDamageEvent event) {
         HavaEntityAction.onDonjonEntityIsHit(event);
+        HavaBossAction.onDonjonBossIsHit(event);
     }
 
     @EventHandler
@@ -88,7 +104,7 @@ public class HavaEvents implements Listener {
             Player player = (Player) event.getDamager();
             ItemStack itemInHand = player.getInventory().getItemInMainHand();
 
-            if(!itemInHand.hasItemMeta()) {
+            if (!itemInHand.hasItemMeta()) {
                 return;
             }
 
@@ -98,7 +114,7 @@ public class HavaEvents implements Listener {
 
             if (itemInHand != null && itemMeta.getPersistentDataContainer().has(keyDonjonType)) {
 
-                try{
+                try {
 
                     NamespacedKey keyID = new NamespacedKey(getPlugin(), HavaNBT.GetItemDonjonID());
                     String uniqueName = itemMeta.getPersistentDataContainer().get(keyID, PersistentDataType.STRING);
@@ -159,8 +175,7 @@ public class HavaEvents implements Listener {
                         }
                     }
 
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     sendHavaError(player, e.toString());
                 }
 
@@ -170,8 +185,12 @@ public class HavaEvents implements Listener {
     }
 
     @EventHandler
-    public void onEntityDeath(EntityDeathEvent event){
+    public void onEntityDeath(EntityDeathEvent event) {
         HavaEntityAction.onDonjonEntityIsDead(event);
+    }
+    @EventHandler
+    public void onSlimeSplit(SlimeSplitEvent event) {
+       HavaBossAction.onDonjonBossSlit(event);
     }
 
 //    INVENTORY
@@ -183,7 +202,7 @@ public class HavaEvents implements Listener {
 
         if (player.hasMetadata(HavaNBT.GetNBTGuiProtect())) {
             event.setCancelled(true);
-            if(item != null){
+            if (item != null) {
                 if (item.hasItemMeta()) {
                     ItemMeta meta = item.getItemMeta();
                     if (meta != null) {
@@ -197,9 +216,9 @@ public class HavaEvents implements Listener {
 
                             sendHavaDev(player, "Unique ID: " + uniqueId);
                             try {
-                                if(HavaGuiItem.getItemByUniqueIdValue(uniqueId) != null){
-                                    if(uniqueId.equals(HavaGuiItem.getItemByUniqueIdValue(uniqueId).getUniqueIdValue()) && player.hasMetadata(HavaNBT.GetNBTGuiProtect())){
-                                        if(HavaGuiItem.getItemByUniqueIdValue(uniqueId).getGuiTarget() != null){
+                                if (HavaGuiItem.getItemByUniqueIdValue(uniqueId) != null) {
+                                    if (uniqueId.equals(HavaGuiItem.getItemByUniqueIdValue(uniqueId).getUniqueIdValue()) && player.hasMetadata(HavaNBT.GetNBTGuiProtect())) {
+                                        if (HavaGuiItem.getItemByUniqueIdValue(uniqueId).getGuiTarget() != null) {
                                             getGuiByName(HavaGuiItem.getItemByUniqueIdValue(uniqueId).getGuiTarget()).openReadonlyInventory(player);
                                         }
                                     }
@@ -242,18 +261,18 @@ public class HavaEvents implements Listener {
         ItemStack item = event.getItem();
         Action action = event.getAction();
 
-        if(item != null){
+        if (item != null) {
             if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
-                if(item.hasItemMeta()){
+                if (item.hasItemMeta()) {
                     HavaSpellAction.onDonjonSpellUse(player, item, event);
                 }
 
-                if(item.getType() == Material.RECOVERY_COMPASS) {
-                    if(item.getItemMeta().getDisplayName().equalsIgnoreCase("§7NavMenu")){
+                if (item.getType() == Material.RECOVERY_COMPASS) {
+                    if (item.getItemMeta().getDisplayName().equalsIgnoreCase("§7NavMenu")) {
                         HavaGui gui = HavaGui.getGuiByName("nav");
-                        if(gui != null){
+                        if (gui != null) {
                             gui.openReadonlyInventory(player);
-                        } else{
+                        } else {
                             HavaPouce.sendHavaError(player, "Merci de crée un gui ayant pour nom nav");
                         }
 

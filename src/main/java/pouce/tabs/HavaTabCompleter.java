@@ -3,6 +3,7 @@ package pouce.tabs;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import pouce.boss.HavaBossUtils;
 import pouce.entity.HavaEntityUtils;
 import pouce.gui.HavaGui;
 import pouce.gui.HavaGuiItem;
@@ -24,6 +25,8 @@ public class HavaTabCompleter implements TabCompleter {
         Set<String> validItemDonjonArgs = Set.of("add");
         Set<String> validTypeItemDonjonArgs = Set.of("melee", "distance", "utilitaire");
 
+        Set<String> validDonjonBossmArgs = Set.of("spawn", "kill");
+
 
         // ---------- GUI ----------
 
@@ -35,7 +38,6 @@ public class HavaTabCompleter implements TabCompleter {
                     suggestions.add(arg);
                 }
             }
-
         }
 
         // GUI <Action> <TargetGUI>
@@ -113,10 +115,28 @@ public class HavaTabCompleter implements TabCompleter {
 
         // ---------- donjonmob ----------
 
-        else if (args.length == 1){
+        else if (Objects.equals(command.getName().toLowerCase(), "donjonmob") &&  args.length == 1){
             for (String mob : HavaEntityUtils.getEntityMap().keySet()) {
                 if(mob.toLowerCase().startsWith(args[0].toLowerCase())){
                     suggestions.add(mob);
+                }
+            }
+        }
+
+        // ---------- donjonBoss ----------
+
+        else if (Objects.equals(command.getName().toLowerCase(), "donjonboss") && args.length == 1) {
+            for (String arg : validDonjonBossmArgs) {
+                if (arg.toLowerCase().startsWith(args[0].toLowerCase())) {
+                    suggestions.add(arg);
+                }
+            }
+        }
+
+        else if (Objects.equals(command.getName().toLowerCase(), "donjonboss") && args.length == 2){
+            for (String boss : HavaBossUtils.getBossMap().keySet()) {
+                if(boss.toLowerCase().startsWith(args[1].toLowerCase())){
+                    suggestions.add(boss);
                 }
             }
         }

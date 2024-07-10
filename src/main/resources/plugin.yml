@@ -28,5 +28,8 @@ commands:
   donjonmob:
     description: permet de manipuler les mobs donjon
     usage: /donjonmob
+  donjonboss:
+    description: permet de manupuler les boss
+    usage: /donjonboss
 
 

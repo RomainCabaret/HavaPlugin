@@ -1,11 +1,12 @@
 package pouce.commands;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -13,6 +14,8 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import pouce.boss.HavaBoss;
+import pouce.boss.HavaBossUtils;
 import pouce.entity.HavaEntity;
 import pouce.entity.HavaEntityUtils;
 import pouce.gui.HavaGui;
@@ -23,6 +26,7 @@ import pouce.items.HavaUtilitaireItems;
 import pouce.items.utils.HavaItemsUtils;
 import pouce.nbt.HavaNBT;
 
+import java.util.Objects;
 import java.util.Set;
 
 import static pouce.HavaPouce.*;
@@ -280,7 +284,7 @@ public class HavaCommand implements CommandExecutor {
                                                 Integer value = container.get(key, PersistentDataType.INTEGER);
                                                 nbtData.append("§f§l -  " + key.getKey()).append(" ➤ §7").append(value).append("\n");
 
-                                            } else{
+                                            } else {
                                                 nbtData.append("§f§l -  " + key.getKey()).append(" ➤ §7").append("VALEUR NON RECONNUE (TYPE INCORRECT)").append("\n");
                                             }
                                         }
@@ -387,7 +391,6 @@ public class HavaCommand implements CommandExecutor {
                             return true;
                         }
                     } else if (args.length == 2) {
-
                         switch (args[0]) {
                             case "add": {
                                 ItemStack itemStack = player.getInventory().getItemInMainHand();
@@ -446,36 +449,80 @@ public class HavaCommand implements CommandExecutor {
                     }
                 }
                 case "vision": {
-                    if(args.length == 0){
-                        if(player.hasPotionEffect(PotionEffectType.NIGHT_VISION)){
+                    if (args.length == 0) {
+                        if (player.hasPotionEffect(PotionEffectType.NIGHT_VISION)) {
                             player.removePotionEffect(PotionEffectType.NIGHT_VISION);
                             sendHavaMessage(player, "Effet de vision nocturne désactivé !");
-                        }else {
+                        } else {
                             PotionEffect nightVision = new PotionEffect(PotionEffectType.NIGHT_VISION, PotionEffect.INFINITE_DURATION, 0, false, false);
                             player.addPotionEffect(nightVision);
                             sendHavaMessage(player, "Effet de vision nocturne activé !");
                         }
                         return true;
-                    }
-                    else {
+                    } else {
                         sendHavaMessage(player, "Utilisation : /vision");
                         return true;
                     }
 
                 }
-                case "donjonmob":{
-                    if(args.length == 1){
+                case "donjonmob": {
+                    if (args.length == 1) {
                         HavaEntity entity = HavaEntityUtils.getEntity("CoruptHusk");
 
-                        if(entity == null){
+                        if (entity == null) {
                             sendHavaError(player, "Mob inconnue");
                             return true;
                         }
                         HavaEntityUtils.spawnEntity(entity, player.getLocation());
                         return true;
 
-                    } else{
+                    } else {
                         sendHavaMessage(player, "Utilisation : /donjonmob");
+                        return true;
+                    }
+                }
+                case "donjonboss": {
+                    if (args.length == 2) {
+                        switch (args[0]) {
+                            case "spawn": {
+                                HavaBoss boss = HavaBossUtils.getBoss(args[1]);
+
+                                if (boss == null) {
+                                    sendHavaError(player, "Boss inconnue");
+                                    return true;
+                                }
+                                boss.spawn(player.getLocation());
+                                return true;
+                            }
+                            case "kill": {
+                                HavaBoss boss = HavaBossUtils.getBoss(args[1]);
+
+                                if (boss == null) {
+                                    sendHavaError(player, "Boss inconnue");
+                                    return true;
+                                }
+                                int bossCount = 0;
+                                for (World world : Bukkit.getWorlds()) {
+                                    for (Entity entity : world.getEntitiesByClass(Entity.class)) {
+                                        if (entity.getPersistentDataContainer().has(new NamespacedKey(getPlugin(), HavaNBT.GetEntityDonjonBoss()), PersistentDataType.STRING)) {
+                                            if (Objects.equals(entity.getPersistentDataContainer().get(new NamespacedKey(getPlugin(), HavaNBT.GetEntityDonjonBoss()), PersistentDataType.STRING), args[1])) {
+                                                boss.kill();
+                                                sendHavaMessage(player, "magma");
+                                                bossCount++;
+                                            }
+                                        }
+                                    }
+                                }
+                                sendHavaMessage(player, bossCount + " boss tué");
+                                return true;
+                            }
+                            default:
+                                sendHavaMessage(player, "Utilisation : /donjonboss");
+                                return true;
+                        }
+
+                    } else {
+                        sendHavaMessage(player, "Utilisation : /donjonboss <action>");
                         return true;
                     }
                 }

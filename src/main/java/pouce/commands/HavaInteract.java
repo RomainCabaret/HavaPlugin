@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -47,6 +48,11 @@ public class HavaInteract {
                 return;
             }
 
+            if(player.getLocation().getWorld() == world){
+                return;
+            }
+
+            player.closeInventory();
             player.teleport(world.getSpawnLocation());
         }
     }
@@ -179,10 +185,16 @@ public class HavaInteract {
                         if (targerItem instanceof HavaMeleeItems) {
 
                             HavaMeleeItems meleeItem = (HavaMeleeItems) targerItem;
-                            if (event.getClick().isLeftClick()) {
+
+                            if (event.getClick() == ClickType.LEFT) {
                                 meleeItem.setDamage(meleeItem.getDamage() + 1);
-                            } else if (event.getClick().isRightClick()) {
+                            } else if (event.getClick() == ClickType.SHIFT_LEFT) {
+                                meleeItem.setDamage(meleeItem.getDamage() + 10);
+                            }
+                            else if (event.getClick() == ClickType.RIGHT) {
                                 meleeItem.setDamage(meleeItem.getDamage() - 1);
+                            }else if (event.getClick() == ClickType.SHIFT_RIGHT) {
+                                meleeItem.setDamage(meleeItem.getDamage() - 10);
                             }
 
                             player.openInventory(HavaFixedGui.GetEditItemFixedGui(meleeItem));
@@ -191,10 +203,16 @@ public class HavaInteract {
                         } else if (targerItem instanceof HavaDistanceItems) {
                             HavaDistanceItems distanceItem = (HavaDistanceItems) targerItem;
 
-                            if (event.getClick().isLeftClick()) {
+                            if (event.getClick() == ClickType.LEFT) {
                                 distanceItem.setDamage(distanceItem.getDamage() + 1);
-                            } else if (event.getClick().isRightClick()) {
+                            } else if (event.getClick() == ClickType.SHIFT_LEFT) {
+                                distanceItem.setDamage(distanceItem.getDamage() + 10);
+                            }
+                            else if (event.getClick() == ClickType.RIGHT) {
                                 distanceItem.setDamage(distanceItem.getDamage() - 1);
+                            }
+                            else if (event.getClick() == ClickType.SHIFT_RIGHT) {
+                                distanceItem.setDamage(distanceItem.getDamage() - 10);
                             }
 
 
@@ -210,10 +228,16 @@ public class HavaInteract {
 
                             HavaMeleeItems meleeItem = (HavaMeleeItems) targerItem;
 
-                            if (event.getClick().isLeftClick()) {
+                            if (event.getClick() == ClickType.LEFT) {
                                 meleeItem.setStrength(meleeItem.getStrength() + 1);
-                            } else if (event.getClick().isRightClick()) {
+                            } else if (event.getClick() == ClickType.SHIFT_LEFT) {
+                                meleeItem.setStrength(meleeItem.getStrength() + 10);
+                            }
+                            else if (event.getClick() == ClickType.RIGHT) {
                                 meleeItem.setStrength(meleeItem.getStrength() - 1);
+                            }
+                            else if (event.getClick() == ClickType.SHIFT_RIGHT) {
+                                meleeItem.setStrength(meleeItem.getStrength() - 10);
                             }
 
                             player.openInventory(HavaFixedGui.GetEditItemFixedGui(meleeItem));
@@ -222,10 +246,15 @@ public class HavaInteract {
                         } else if (targerItem instanceof HavaDistanceItems) {
                             HavaDistanceItems distanceItem = (HavaDistanceItems) targerItem;
 
-                            if (event.getClick().isLeftClick()) {
+                            if (event.getClick() == ClickType.LEFT) {
                                 distanceItem.setStrength(distanceItem.getStrength() + 1);
-                            } else if (event.getClick().isRightClick()) {
+                            } else if (event.getClick() == ClickType.SHIFT_LEFT) {
+                                distanceItem.setStrength(distanceItem.getStrength() + 10);
+                            } else if (event.getClick() == ClickType.RIGHT) {
                                 distanceItem.setStrength(distanceItem.getStrength() - 1);
+                            }
+                            else if (event.getClick() == ClickType.SHIFT_RIGHT) {
+                                distanceItem.setStrength(distanceItem.getStrength() - 10);
                             }
 
                             player.openInventory(HavaFixedGui.GetEditItemFixedGui(distanceItem));

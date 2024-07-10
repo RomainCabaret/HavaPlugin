@@ -22,16 +22,20 @@ import static pouce.HavaPouce.*;
 
 public class HavaEntityAction {
     public static void onDonjonEntityIsHit(EntityDamageEvent event) {
-        LivingEntity entity = (LivingEntity) event.getEntity();
 
-        if (entity.getPersistentDataContainer().has(new NamespacedKey(getPlugin(), HavaNBT.GetEntityDonjonType()), PersistentDataType.STRING)) {
-            String entityName = entity.getPersistentDataContainer().get(new NamespacedKey(getPlugin(), HavaNBT.GetEntityDonjonType()), PersistentDataType.STRING);
-            HavaEntity havaEntity = HavaEntityUtils.getEntity(entityName);
+        if(event.getEntity() instanceof LivingEntity) {
+            LivingEntity entity = (LivingEntity) event.getEntity();
 
-            double currentHealth = entity.getHealth() - event.getFinalDamage();
-            String healthBar = HavaEntityUtils.formatEntityHealth(havaEntity, currentHealth);
-            entity.setCustomName(healthBar);
+            if (entity.getPersistentDataContainer().has(new NamespacedKey(getPlugin(), HavaNBT.GetEntityDonjonType()), PersistentDataType.STRING)) {
+                String entityName = entity.getPersistentDataContainer().get(new NamespacedKey(getPlugin(), HavaNBT.GetEntityDonjonType()), PersistentDataType.STRING);
+                HavaEntity havaEntity = HavaEntityUtils.getEntity(entityName);
+
+                double currentHealth = entity.getHealth() - event.getFinalDamage();
+                String healthBar = HavaEntityUtils.formatEntityHealth(havaEntity, currentHealth);
+                entity.setCustomName(healthBar);
+            }
         }
+
 
     }
 
