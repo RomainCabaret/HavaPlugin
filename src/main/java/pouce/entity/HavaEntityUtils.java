@@ -14,6 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.persistence.PersistentDataType;
 import pouce.entity.sand.HavaCoruptHusk;
+import pouce.entity.sand.HavaRavageur;
 import pouce.items.spells.HavaSpell;
 import pouce.items.spells.weapons.HavaSpellFurieSanguinaire;
 import pouce.items.spells.weapons.HavaSpellNull;
@@ -34,29 +35,10 @@ public class HavaEntityUtils {
 
     public static void loadCustomEntity(){
         HavaCoruptHusk havaCoruptHusk = new HavaCoruptHusk("CoruptHusk", 150, 10 , EntityType.HUSK);
-        havaCoruptHusk.setBaby(true);
-
-        ItemStack[] armor = {
-                new ItemStack(Material.DIAMOND_HELMET),
-                new ItemStack(Material.DIAMOND_CHESTPLATE),
-                new ItemStack(Material.DIAMOND_LEGGINGS),
-                new ItemStack(Material.DIAMOND_BOOTS)
-        };
-        havaCoruptHusk.setArmor(armor);
-
-        // Définir les items des mains
-        havaCoruptHusk.setMainHand(new ItemStack(Material.DIAMOND_SWORD));
-        havaCoruptHusk.setOffHand(new ItemStack(Material.SHIELD));
-
-        // Définir la table de drop
-        List<HavaEntity.DropItem> dropTable = new ArrayList<>();
-        dropTable.add(new HavaEntity.DropItem(new ItemStack(Material.GOLD_INGOT), 4, 15, 1.0)); // 100% de chance de drop entre 4 et 15 gold
-        dropTable.add(new HavaEntity.DropItem(new ItemStack(Material.DIAMOND_SWORD), 1, 1, 1.0)); // 0.1% de chance de drop une épée
-        havaCoruptHusk.setDropTable(dropTable);
-
+        HavaRavageur havaRavageur = new HavaRavageur("Ravageur", 550, 100, EntityType.RAVAGER);
 
         customEntitiesMap.put("CoruptHusk",havaCoruptHusk);
-
+        customEntitiesMap.put("Ravageur",havaRavageur);
     }
 
     public static HavaEntity getEntity(String uniqueName){
@@ -68,11 +50,16 @@ public class HavaEntityUtils {
         customMob.setCustomName(formatEntityHealth(entity, entity.getMaxHealth()));
         customMob.setMaxHealth(entity.getMaxHealth());
         customMob.setHealth(entity.getMaxHealth());
-        customMob.getAttribute(org.bukkit.attribute.Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(entity.getDamage());
+        customMob.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(entity.getDamage());
+        customMob.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(entity.getSpeed());
         customMob.getPersistentDataContainer().set(new NamespacedKey(getPlugin(), HavaNBT.GetEntityDonjonType()), PersistentDataType.STRING, entity.getName());
         customMob.setCustomNameVisible(true);
         customMob.setPersistent(true);
         customMob.setRemoveWhenFarAway(false);
+
+        if(entity.getEffect() != null){
+            customMob.addPotionEffect(entity.getEffect());
+        }
 
 
         if (entity.isBaby() && customMob instanceof Ageable) {

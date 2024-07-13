@@ -467,7 +467,7 @@ public class HavaCommand implements CommandExecutor {
                 }
                 case "donjonmob": {
                     if (args.length == 1) {
-                        HavaEntity entity = HavaEntityUtils.getEntity("CoruptHusk");
+                        HavaEntity entity = HavaEntityUtils.getEntity(args[0]);
 
                         if (entity == null) {
                             sendHavaError(player, "Mob inconnue");

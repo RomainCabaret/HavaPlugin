@@ -34,6 +34,18 @@ public class HavaBossAction {
         }
     }
 
+    public static void onDonjonBossIsDead(EntityDeathEvent event) {
+        if(event.getEntity() instanceof LivingEntity) {
+            LivingEntity entity = (LivingEntity) event.getEntity();
+            if (entity.getPersistentDataContainer().has(new NamespacedKey(getPlugin(), HavaNBT.GetEntityDonjonBoss()), PersistentDataType.STRING)) {
+                String bossName = entity.getPersistentDataContainer().get(new NamespacedKey(getPlugin(), HavaNBT.GetEntityDonjonBoss()), PersistentDataType.STRING);
+                HavaBoss boss = HavaBossUtils.getBoss(bossName);
+
+                boss.onDead();
+            }
+        }
+    }
+
     public static void onDonjonBossSlit(SlimeSplitEvent event) {
         LivingEntity entity = (LivingEntity) event.getEntity();
 

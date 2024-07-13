@@ -3,6 +3,7 @@ package pouce.entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 
 import java.util.List;
 
@@ -17,6 +18,8 @@ public abstract class HavaEntity {
     private ItemStack offHand;
     private List<DropItem> dropTable;
     private int xpDrop;
+    private float speed;
+    private PotionEffect effect;
 
 
     public HavaEntity(String name, double health, double damage, EntityType type) {
@@ -26,6 +29,7 @@ public abstract class HavaEntity {
         this.type = type;
         this.isBaby = false;
         this.xpDrop = 0;
+        this.speed = 0.3f;
     }
 
     public String getName() {
@@ -39,6 +43,21 @@ public abstract class HavaEntity {
     }
     public EntityType getType() {
         return type;
+    }
+
+    public float getSpeed(){
+        return speed;
+    }
+
+    public void setSpeed(float speed){
+        this.speed = speed;
+    }
+
+    public PotionEffect getEffect() {
+        return effect;
+    }
+    public void setEffect(PotionEffect effect) {
+        this.effect = effect;
     }
 
     public void setBaby(boolean b) {

@@ -24,6 +24,7 @@ public abstract class HavaBoss {
 
     public abstract void spawn(Location location);
     public abstract void kill();
+    public abstract void onDead();
 
     public String getName() {
         return name;

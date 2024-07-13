@@ -187,6 +187,7 @@ public class HavaEvents implements Listener {
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
         HavaEntityAction.onDonjonEntityIsDead(event);
+        HavaBossAction.onDonjonBossIsDead(event);
     }
     @EventHandler
     public void onSlimeSplit(SlimeSplitEvent event) {

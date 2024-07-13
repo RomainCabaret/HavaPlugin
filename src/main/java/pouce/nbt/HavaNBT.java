@@ -38,6 +38,8 @@ public class HavaNBT {
     private static final String ENTITY_DONJON_TYPE = "entityDonjonType";
     public static String GetEntityDonjonType() { return ENTITY_DONJON_TYPE;}
 
+    // BOSS
+
     private static final String ENTITY_DONJON_BOSS = "entityDonjonBoss";
     public static String GetEntityDonjonBoss() { return ENTITY_DONJON_BOSS;}
 
